@@ -9,10 +9,10 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-primary">FluxAI</h1>
           <div className="flex gap-4">
-            <Link to="/login">
+            <Link to="/auth">
               <Button variant="ghost">Entrar</Button>
             </Link>
-            <Link to="/register">
+            <Link to="/auth">
               <Button>Começar Grátis</Button>
             </Link>
           </div>
@@ -26,7 +26,7 @@ const Landing = () => {
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           Automatize agendamentos via WhatsApp, gerencie sua equipe e deixe a IA cuidar dos seus pacientes 24/7
         </p>
-        <Link to="/register">
+        <Link to="/auth">
           <Button size="lg" className="text-lg px-8">
             Testar Gratuitamente
           </Button>
