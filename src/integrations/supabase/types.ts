@@ -41,6 +41,50 @@ export type Database = {
         }
         Relationships: []
       }
+      professionals: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          specialty: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          phone?: string | null
+          specialty: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          phone?: string | null
+          specialty?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professionals_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           clinic_id: string
