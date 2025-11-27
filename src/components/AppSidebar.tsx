@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Briefcase, Calendar } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Profissionais", url: "/professionals", icon: Users },
+  { title: "Serviços", url: "/services", icon: Briefcase },
+  { title: "Agendamentos", url: "/appointments", icon: Calendar },
 ];
 
 export function AppSidebar() {

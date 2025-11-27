@@ -10,8 +10,11 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Professionals from "./pages/Professionals";
+import Services from "./pages/Services";
+import Appointments from "./pages/Appointments";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import { Chatbot } from "./components/Chatbot";
 
 const queryClient = new QueryClient();
 
@@ -53,9 +56,24 @@ const App = () => (
                 </DashboardLayout>
               </ProtectedRoute>
             } />
+            <Route path="/services" element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Services />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/appointments" element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Appointments />
+                </DashboardLayout>
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <Chatbot />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
