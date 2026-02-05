@@ -2,101 +2,150 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Elite Design System - Sophisticated Neutral Palette with Dark Mode
+   All colors in HSL for maximum flexibility and theming support.
 */
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 28% 17%;
+    /* Background layers - warm neutral grays */
+    --background: 220 14% 96%;
+    --foreground: 220 20% 14%;
 
+    /* Card surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 220 20% 14%;
 
+    /* Popover/Dropdown */
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover-foreground: 220 20% 14%;
 
-    --primary: 217 91% 53%;
+    /* Primary - Refined slate blue */
+    --primary: 220 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 28% 17%;
+    /* Secondary - Deep charcoal */
+    --secondary: 220 16% 22%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted - Soft gray for backgrounds */
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 10% 46%;
 
-    --accent: 160 84% 39%;
+    /* Accent - Emerald success */
+    --accent: 160 60% 42%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    /* Destructive - Refined coral */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 53%;
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --radius: 0.75rem;
+    /* Info - Sky blue */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
 
-    --chart-1: 217 91% 53%;
-    --chart-2: 160 84% 39%;
-    --chart-3: 43 96% 56%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Borders and inputs */
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 220 70% 50%;
 
+    /* Radius */
+    --radius: 0.625rem;
+
+    /* Chart colors - Sophisticated palette */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 42%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 280 55% 55%;
+    --chart-5: 340 65% 50%;
+
+    /* Sidebar - Clean white */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 215 28% 17%;
-    --sidebar-primary: 217 91% 53%;
+    --sidebar-foreground: 220 20% 14%;
+    --sidebar-primary: 220 70% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 96%;
-    --sidebar-accent-foreground: 215 28% 17%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 217 91% 53%;
+    --sidebar-accent: 220 14% 95%;
+    --sidebar-accent-foreground: 220 20% 14%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 220 70% 50%;
+
+    /* KPI-specific tokens */
+    --kpi-positive: 160 60% 42%;
+    --kpi-negative: 0 72% 51%;
+    --kpi-neutral: 220 10% 46%;
   }
 
   .dark {
-    --background: 215 28% 10%;
-    --foreground: 210 20% 98%;
+    /* Background layers - Rich dark neutrals */
+    --background: 224 25% 9%;
+    --foreground: 210 20% 94%;
 
-    --card: 215 28% 13%;
-    --card-foreground: 210 20% 98%;
+    /* Card surfaces - Elevated dark */
+    --card: 224 25% 12%;
+    --card-foreground: 210 20% 94%;
 
-    --popover: 215 28% 13%;
-    --popover-foreground: 210 20% 98%;
+    /* Popover/Dropdown */
+    --popover: 224 25% 12%;
+    --popover-foreground: 210 20% 94%;
 
-    --primary: 217 91% 53%;
+    /* Primary - Vibrant blue for dark mode */
+    --primary: 217 85% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 28% 20%;
+    /* Secondary - Lighter for dark mode */
+    --secondary: 217 20% 28%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 215 28% 17%;
-    --muted-foreground: 215 16% 60%;
+    /* Muted - Dark surfaces */
+    --muted: 224 20% 16%;
+    --muted-foreground: 215 15% 58%;
 
-    --accent: 160 84% 39%;
+    /* Accent - Brighter emerald for dark */
+    --accent: 160 65% 48%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 63% 31%;
+    /* Destructive - Softer red for dark */
+    --destructive: 0 68% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 28% 20%;
-    --input: 215 28% 20%;
-    --ring: 217 91% 53%;
+    /* Warning */
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 10%;
 
-    --chart-1: 217 91% 60%;
-    --chart-2: 160 84% 45%;
-    --chart-3: 43 96% 60%;
-    --chart-4: 280 65% 65%;
-    --chart-5: 340 75% 60%;
+    /* Info */
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 10%;
 
-    --sidebar-background: 215 28% 10%;
-    --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 217 91% 53%;
+    /* Borders and inputs */
+    --border: 224 20% 20%;
+    --input: 224 20% 20%;
+    --ring: 217 85% 62%;
+
+    /* Chart colors - Brighter for dark mode */
+    --chart-1: 217 85% 65%;
+    --chart-2: 160 65% 50%;
+    --chart-3: 38 92% 58%;
+    --chart-4: 280 60% 62%;
+    --chart-5: 340 70% 58%;
+
+    /* Sidebar - Dark elevated */
+    --sidebar-background: 224 25% 9%;
+    --sidebar-foreground: 210 20% 94%;
+    --sidebar-primary: 217 85% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 28% 17%;
-    --sidebar-accent-foreground: 210 20% 98%;
-    --sidebar-border: 215 28% 20%;
-    --sidebar-ring: 217 91% 53%;
+    --sidebar-accent: 224 20% 16%;
+    --sidebar-accent-foreground: 210 20% 94%;
+    --sidebar-border: 224 20% 20%;
+    --sidebar-ring: 217 85% 62%;
+
+    /* KPI-specific tokens */
+    --kpi-positive: 160 65% 50%;
+    --kpi-negative: 0 68% 58%;
+    --kpi-neutral: 215 15% 58%;
   }
 }
 
@@ -106,6 +155,28 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    @apply backdrop-blur-xl bg-card/80 border border-border/50;
+  }
+  
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary/80;
+  }
+  
+  .gradient-success {
+    @apply bg-gradient-to-r from-accent to-accent/80;
+  }
+  
+  .kpi-card {
+    @apply bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .chart-container {
+    @apply bg-card border border-border rounded-xl p-6 shadow-sm;
   }
 }
