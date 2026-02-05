@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -11,6 +10,37 @@ interface Message {
   content: string;
   timestamp: Date;
 }
+
+// Respostas mock do chatbot
+const getMockResponse = (message: string): string => {
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes("agendar") || lowerMessage.includes("consulta") || lowerMessage.includes("marcar")) {
+    return "Ótimo! Para agendar sua consulta, preciso de algumas informações. Qual é o seu nome completo? 📅";
+  }
+  
+  if (lowerMessage.includes("horário") || lowerMessage.includes("horarios") || lowerMessage.includes("funciona")) {
+    return "Nossa clínica funciona de segunda a sexta, das 8h às 18h, e aos sábados das 8h às 12h. ⏰";
+  }
+  
+  if (lowerMessage.includes("serviço") || lowerMessage.includes("serviços") || lowerMessage.includes("oferecem")) {
+    return "Oferecemos diversos serviços: Consulta Geral, Exame de Pele, Eletrocardiograma, entre outros. Qual serviço você gostaria de saber mais? 🏥";
+  }
+  
+  if (lowerMessage.includes("preço") || lowerMessage.includes("valor") || lowerMessage.includes("custo")) {
+    return "Os valores variam conforme o serviço. A consulta geral custa R$ 150,00, por exemplo. Posso verificar o valor de algum serviço específico? 💰";
+  }
+  
+  if (lowerMessage.includes("cancelar") || lowerMessage.includes("desmarcar")) {
+    return "Para cancelar um agendamento, preciso do seu nome completo e a data da consulta. Pode me informar? 📋";
+  }
+  
+  if (lowerMessage.includes("obrigado") || lowerMessage.includes("obrigada") || lowerMessage.includes("valeu")) {
+    return "Por nada! Fico feliz em ajudar. Se precisar de mais alguma coisa, estou aqui! 😊";
+  }
+  
+  return "Entendi! Como posso ajudar você hoje? Posso auxiliar com agendamentos, informações sobre serviços, horários de funcionamento e muito mais. 😊";
+};
 
 export const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,34 +71,21 @@ export const Chatbot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const userInput = input;
     setInput("");
     setIsLoading(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke("chatbot", {
-        body: { message: input },
-      });
+    // Simular delay de resposta
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      if (error) throw error;
+    const assistantMessage: Message = {
+      role: "assistant",
+      content: getMockResponse(userInput),
+      timestamp: new Date(),
+    };
 
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.response,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
-      const errorMessage: Message = {
-        role: "assistant",
-        content: "Desculpe, ocorreu um erro. Por favor, tente novamente.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    setMessages((prev) => [...prev, assistantMessage]);
+    setIsLoading(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -94,7 +111,7 @@ export const Chatbot = () => {
         <Card className="fixed bottom-24 right-6 w-96 h-[500px] shadow-2xl z-50 flex flex-col">
           <div className="bg-primary text-primary-foreground p-4 rounded-t-lg">
             <h3 className="font-semibold text-lg">Clara - Assistente Virtual</h3>
-            <p className="text-xs opacity-90">FluxAI</p>
+            <p className="text-xs opacity-90">FluxAI (Modo Demo)</p>
           </div>
 
           <ScrollArea className="flex-1 p-4" ref={scrollRef}>
