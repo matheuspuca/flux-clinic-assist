@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, Package } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
@@ -21,6 +21,7 @@ const menuItems = [
   { title: "Profissionais", url: "/professionals", icon: Users },
   { title: "Serviços", url: "/services", icon: Briefcase },
   { title: "Agendamentos", url: "/appointments", icon: Calendar },
+  { title: "Estoque", url: "/inventory", icon: Package },
   { title: "Financeiro", url: "/financial", icon: DollarSign },
 ];
 
