@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,10 +37,16 @@ type Professional = {
   email?: string;
 };
 
+// Dados mock iniciais
+const initialProfessionals: Professional[] = [
+  { id: "1", full_name: "Dr. Carlos Silva", specialty: "Clínico Geral", phone: "(11) 99999-0001", email: "carlos@clinica.com" },
+  { id: "2", full_name: "Dra. Ana Santos", specialty: "Dermatologia", phone: "(11) 99999-0002", email: "ana@clinica.com" },
+  { id: "3", full_name: "Dr. Pedro Costa", specialty: "Cardiologia", phone: "(11) 99999-0003", email: "pedro@clinica.com" },
+];
+
 const Professionals = () => {
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [professionals, setProfessionals] = useState<Professional[]>(initialProfessionals);
+  const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>(initialProfessionals);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfessional, setEditingProfessional] = useState<Professional | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,46 +59,32 @@ const Professionals = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    fetchProfessionals();
-  }, []);
+  const filterProfessionals = (profs: Professional[], search: string, specialty: string) => {
+    let filtered = profs;
 
-  useEffect(() => {
-    filterProfessionals();
-  }, [professionals, searchTerm, specialtyFilter]);
-
-  const fetchProfessionals = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("professionals")
-        .select("*")
-        .order("full_name");
-
-      if (error) throw error;
-      setProfessionals(data || []);
-    } catch (error) {
-      toast.error("Erro ao carregar profissionais");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterProfessionals = () => {
-    let filtered = professionals;
-
-    if (searchTerm) {
+    if (search) {
       filtered = filtered.filter(
         (p) =>
-          p.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+          p.full_name.toLowerCase().includes(search.toLowerCase()) ||
+          p.specialty.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    if (specialtyFilter !== "all") {
-      filtered = filtered.filter((p) => p.specialty === specialtyFilter);
+    if (specialty !== "all") {
+      filtered = filtered.filter((p) => p.specialty === specialty);
     }
 
     setFilteredProfessionals(filtered);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    filterProfessionals(professionals, value, specialtyFilter);
+  };
+
+  const handleSpecialtyFilterChange = (value: string) => {
+    setSpecialtyFilter(value);
+    filterProfessionals(professionals, searchTerm, value);
   };
 
   const uniqueSpecialties = Array.from(
@@ -134,44 +125,36 @@ const Professionals = () => {
     setErrors({});
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       const validatedData = professionalSchema.parse(formData);
 
-      // Buscar a primeira clínica disponível
-      const { data: clinicData } = await supabase
-        .from("clinics")
-        .select("id")
-        .limit(1)
-        .single();
-
       if (editingProfessional) {
-        const { error } = await supabase
-          .from("professionals")
-          .update(validatedData)
-          .eq("id", editingProfessional.id);
-
-        if (error) throw error;
+        const updatedProfessionals = professionals.map(p => 
+          p.id === editingProfessional.id 
+            ? { ...p, ...validatedData }
+            : p
+        );
+        setProfessionals(updatedProfessionals);
+        filterProfessionals(updatedProfessionals, searchTerm, specialtyFilter);
         toast.success("Profissional atualizado com sucesso");
       } else {
-        const { error } = await supabase
-          .from("professionals")
-          .insert([{
-            clinic_id: clinicData?.id,
-            full_name: validatedData.full_name,
-            specialty: validatedData.specialty,
-            phone: validatedData.phone || null,
-            email: validatedData.email || null,
-          }]);
-
-        if (error) throw error;
+        const newProfessional: Professional = {
+          id: Date.now().toString(),
+          full_name: validatedData.full_name,
+          specialty: validatedData.specialty,
+          phone: validatedData.phone || undefined,
+          email: validatedData.email || undefined,
+        };
+        const updatedProfessionals = [...professionals, newProfessional];
+        setProfessionals(updatedProfessionals);
+        filterProfessionals(updatedProfessionals, searchTerm, specialtyFilter);
         toast.success("Profissional adicionado com sucesso");
       }
 
       handleCloseDialog();
-      fetchProfessionals();
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
@@ -187,30 +170,14 @@ const Professionals = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este profissional?")) return;
 
-    try {
-      const { error } = await supabase
-        .from("professionals")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-      toast.success("Profissional excluído com sucesso");
-      fetchProfessionals();
-    } catch (error) {
-      toast.error("Erro ao excluir profissional");
-    }
+    const updatedProfessionals = professionals.filter(p => p.id !== id);
+    setProfessionals(updatedProfessionals);
+    filterProfessionals(updatedProfessionals, searchTerm, specialtyFilter);
+    toast.success("Profissional excluído com sucesso");
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Carregando...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -231,13 +198,13 @@ const Professionals = () => {
                 <Input
                   placeholder="Buscar por nome ou especialidade..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
             <div className="w-full md:w-64">
-              <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+              <Select value={specialtyFilter} onValueChange={handleSpecialtyFilterChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Filtrar por especialidade" />
                 </SelectTrigger>

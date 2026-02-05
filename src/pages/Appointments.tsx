@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -37,12 +36,10 @@ interface Appointment {
   patient_name: string;
   patient_phone: string | null;
   patient_email: string | null;
-  starts_at: string;
-  ends_at: string;
+  starts_at: Date;
+  ends_at: Date;
   status: string;
   notes: string | null;
-  services: { name: string };
-  professionals: { full_name: string };
 }
 
 interface Service {
@@ -57,12 +54,64 @@ interface Professional {
   specialty: string;
 }
 
+// Dados mock
+const mockServices: Service[] = [
+  { id: "1", name: "Consulta Geral", duration_minutes: 30 },
+  { id: "2", name: "Exame de Pele", duration_minutes: 45 },
+  { id: "3", name: "Eletrocardiograma", duration_minutes: 60 },
+];
+
+const mockProfessionals: Professional[] = [
+  { id: "1", full_name: "Dr. Carlos Silva", specialty: "Clínico Geral" },
+  { id: "2", full_name: "Dra. Ana Santos", specialty: "Dermatologia" },
+  { id: "3", full_name: "Dr. Pedro Costa", specialty: "Cardiologia" },
+];
+
+const today = new Date();
+const initialAppointments: Appointment[] = [
+  {
+    id: "1",
+    service_id: "1",
+    professional_id: "1",
+    patient_name: "João Silva",
+    patient_phone: "(11) 99999-0001",
+    patient_email: "joao@email.com",
+    starts_at: new Date(today.setHours(9, 0, 0, 0)),
+    ends_at: new Date(today.setHours(9, 30, 0, 0)),
+    status: "confirmed",
+    notes: null,
+  },
+  {
+    id: "2",
+    service_id: "2",
+    professional_id: "2",
+    patient_name: "Maria Santos",
+    patient_phone: "(11) 99999-0002",
+    patient_email: null,
+    starts_at: new Date(new Date().setHours(10, 30, 0, 0)),
+    ends_at: new Date(new Date().setHours(11, 15, 0, 0)),
+    status: "pending",
+    notes: "Primeira consulta",
+  },
+  {
+    id: "3",
+    service_id: "3",
+    professional_id: "3",
+    patient_name: "Pedro Costa",
+    patient_phone: "(11) 99999-0003",
+    patient_email: "pedro@email.com",
+    starts_at: new Date(new Date().setHours(14, 0, 0, 0)),
+    ends_at: new Date(new Date().setHours(15, 0, 0, 0)),
+    status: "pending",
+    notes: null,
+  },
+];
+
 const Appointments = () => {
   const { toast } = useToast();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+  const [services] = useState<Service[]>(mockServices);
+  const [professionals] = useState<Professional[]>(mockProfessionals);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -77,83 +126,7 @@ const Appointments = () => {
     notes: "",
   });
 
-  useEffect(() => {
-    fetchAppointments();
-    fetchServices();
-    fetchProfessionals();
-  }, [selectedDate]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("appointments-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "appointments",
-        },
-        () => {
-          fetchAppointments();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [selectedDate]);
-
-  const fetchAppointments = async () => {
-    setLoading(true);
-    const startOfDay = new Date(selectedDate);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(selectedDate);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const { data, error } = await supabase
-      .from("appointments")
-      .select(
-        `
-        *,
-        services(name),
-        professionals(full_name)
-      `
-      )
-      .gte("starts_at", startOfDay.toISOString())
-      .lte("starts_at", endOfDay.toISOString())
-      .order("starts_at");
-
-    if (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar agendamentos",
-        variant: "destructive",
-      });
-    } else {
-      setAppointments(data || []);
-    }
-    setLoading(false);
-  };
-
-  const fetchServices = async () => {
-    const { data } = await supabase
-      .from("services")
-      .select("id, name, duration_minutes")
-      .eq("status", "active")
-      .order("name");
-    setServices(data || []);
-  };
-
-  const fetchProfessionals = async () => {
-    const { data } = await supabase
-      .from("professionals")
-      .select("id, full_name, specialty")
-      .order("full_name");
-    setProfessionals(data || []);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const selectedService = services.find((s) => s.id === formData.service_id);
@@ -166,41 +139,26 @@ const Appointments = () => {
     const endsAt = new Date(startsAt);
     endsAt.setMinutes(endsAt.getMinutes() + selectedService.duration_minutes);
 
-    // Buscar a primeira clínica disponível
-    const { data: clinicData } = await supabase
-      .from("clinics")
-      .select("id")
-      .limit(1)
-      .single();
-
-    const { error } = await supabase.from("appointments").insert({
-      clinic_id: clinicData?.id,
+    const newAppointment: Appointment = {
+      id: Date.now().toString(),
       service_id: formData.service_id,
       professional_id: formData.professional_id,
       patient_name: formData.patient_name,
       patient_phone: formData.patient_phone || null,
       patient_email: formData.patient_email || null,
-      starts_at: startsAt.toISOString(),
-      ends_at: endsAt.toISOString(),
+      starts_at: startsAt,
+      ends_at: endsAt,
       status: "pending",
-      origin: "manual",
       notes: formData.notes || null,
-    });
+    };
 
-    if (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar agendamento",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Sucesso",
-        description: "Agendamento criado com sucesso",
-      });
-      setDialogOpen(false);
-      resetForm();
-    }
+    setAppointments([...appointments, newAppointment]);
+    toast({
+      title: "Sucesso",
+      description: "Agendamento criado com sucesso",
+    });
+    setDialogOpen(false);
+    resetForm();
   };
 
   const resetForm = () => {
@@ -235,6 +193,18 @@ const Appointments = () => {
     };
     return labels[status as keyof typeof labels] || status;
   };
+
+  const getServiceName = (serviceId: string) => {
+    return services.find(s => s.id === serviceId)?.name || "Serviço";
+  };
+
+  const getProfessionalName = (professionalId: string) => {
+    return professionals.find(p => p.id === professionalId)?.full_name || "Profissional";
+  };
+
+  const filteredAppointments = appointments.filter(apt => 
+    isSameDay(apt.starts_at, selectedDate)
+  ).sort((a, b) => a.starts_at.getTime() - b.starts_at.getTime());
 
   return (
     <div className="p-8">
@@ -419,60 +389,56 @@ const Appointments = () => {
         </Popover>
       </div>
 
-      {loading ? (
-        <div className="text-center py-8">Carregando...</div>
-      ) : (
-        <div className="space-y-3">
-          {appointments.map((apt) => (
-            <div
-              key={apt.id}
-              className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${getStatusColor(
-                        apt.status
-                      )}`}
-                    />
-                    <h3 className="font-semibold text-lg">{apt.patient_name}</h3>
-                    <Badge variant="outline">{getStatusLabel(apt.status)}</Badge>
-                  </div>
-                  <div className="text-sm text-muted-foreground space-y-1 ml-6">
+      <div className="space-y-3">
+        {filteredAppointments.map((apt) => (
+          <div
+            key={apt.id}
+            className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <div
+                    className={`w-3 h-3 rounded-full ${getStatusColor(
+                      apt.status
+                    )}`}
+                  />
+                  <h3 className="font-semibold text-lg">{apt.patient_name}</h3>
+                  <Badge variant="outline">{getStatusLabel(apt.status)}</Badge>
+                </div>
+                <div className="text-sm text-muted-foreground space-y-1 ml-6">
+                  <p>
+                    <span className="font-medium">Serviço:</span>{" "}
+                    {getServiceName(apt.service_id)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Profissional:</span>{" "}
+                    {getProfessionalName(apt.professional_id)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Horário:</span>{" "}
+                    {format(apt.starts_at, "HH:mm")} -{" "}
+                    {format(apt.ends_at, "HH:mm")}
+                  </p>
+                  {apt.patient_phone && (
                     <p>
-                      <span className="font-medium">Serviço:</span>{" "}
-                      {apt.services.name}
+                      <span className="font-medium">Telefone:</span>{" "}
+                      {apt.patient_phone}
                     </p>
+                  )}
+                  {apt.notes && (
                     <p>
-                      <span className="font-medium">Profissional:</span>{" "}
-                      {apt.professionals.full_name}
+                      <span className="font-medium">Obs:</span> {apt.notes}
                     </p>
-                    <p>
-                      <span className="font-medium">Horário:</span>{" "}
-                      {format(new Date(apt.starts_at), "HH:mm")} -{" "}
-                      {format(new Date(apt.ends_at), "HH:mm")}
-                    </p>
-                    {apt.patient_phone && (
-                      <p>
-                        <span className="font-medium">Telefone:</span>{" "}
-                        {apt.patient_phone}
-                      </p>
-                    )}
-                    {apt.notes && (
-                      <p>
-                        <span className="font-medium">Obs:</span> {apt.notes}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
-      {!loading && appointments.length === 0 && (
+      {filteredAppointments.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
             Nenhum agendamento para esta data

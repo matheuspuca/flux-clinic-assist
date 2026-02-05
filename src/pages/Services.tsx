@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +36,7 @@ interface Service {
   duration_minutes: number;
   price: number;
   status: string;
-  clinic_id: string;
+  professional_ids: string[];
 }
 
 interface Professional {
@@ -46,11 +45,24 @@ interface Professional {
   specialty: string;
 }
 
+// Dados mock de profissionais
+const mockProfessionals: Professional[] = [
+  { id: "1", full_name: "Dr. Carlos Silva", specialty: "Clínico Geral" },
+  { id: "2", full_name: "Dra. Ana Santos", specialty: "Dermatologia" },
+  { id: "3", full_name: "Dr. Pedro Costa", specialty: "Cardiologia" },
+];
+
+// Dados mock iniciais de serviços
+const initialServices: Service[] = [
+  { id: "1", name: "Consulta Geral", description: "Consulta médica geral", duration_minutes: 30, price: 150, status: "active", professional_ids: ["1"] },
+  { id: "2", name: "Exame de Pele", description: "Avaliação dermatológica completa", duration_minutes: 45, price: 200, status: "active", professional_ids: ["2"] },
+  { id: "3", name: "Eletrocardiograma", description: "Exame cardiológico", duration_minutes: 60, price: 250, status: "active", professional_ids: ["3"] },
+];
+
 const Services = () => {
   const { toast } = useToast();
-  const [services, setServices] = useState<Service[]>([]);
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [professionals] = useState<Professional[]>(mockProfessionals);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,171 +77,61 @@ const Services = () => {
     professional_ids: [] as string[],
   });
 
-  useEffect(() => {
-    fetchServices();
-    fetchProfessionals();
-  }, []);
-
-  const fetchServices = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .order("name");
-
-    if (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar serviços",
-        variant: "destructive",
-      });
-    } else {
-      setServices(data || []);
-    }
-    setLoading(false);
-  };
-
-  const fetchProfessionals = async () => {
-    const { data, error } = await supabase
-      .from("professionals")
-      .select("id, full_name, specialty")
-      .order("full_name");
-
-    if (error) {
-      console.error("Error fetching professionals:", error);
-    } else {
-      setProfessionals(data || []);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (editingService) {
-      const { error } = await supabase
-        .from("services")
-        .update({
-          name: formData.name,
-          description: formData.description,
-          duration_minutes: formData.duration_minutes,
-          price: formData.price,
-          status: formData.status,
-        })
-        .eq("id", editingService.id);
-
-      if (error) {
-        toast({
-          title: "Erro",
-          description: "Erro ao atualizar serviço",
-          variant: "destructive",
-        });
-      } else {
-        await updateProfessionalServices(editingService.id);
-        
-        toast({
-          title: "Sucesso",
-          description: "Serviço atualizado com sucesso",
-        });
-        setDialogOpen(false);
-        fetchServices();
-      }
+      setServices(services.map(s => 
+        s.id === editingService.id 
+          ? { ...s, ...formData }
+          : s
+      ));
+      toast({
+        title: "Sucesso",
+        description: "Serviço atualizado com sucesso",
+      });
     } else {
-      // Buscar a primeira clínica disponível
-      const { data: clinicData } = await supabase
-        .from("clinics")
-        .select("id")
-        .limit(1)
-        .single();
-
-      const { data: serviceData, error } = await supabase
-        .from("services")
-        .insert({
-          clinic_id: clinicData?.id,
-          name: formData.name,
-          description: formData.description,
-          duration_minutes: formData.duration_minutes,
-          price: formData.price,
-          status: formData.status,
-        })
-        .select()
-        .single();
-
-      if (error) {
-        toast({
-          title: "Erro",
-          description: "Erro ao criar serviço",
-          variant: "destructive",
-        });
-      } else if (serviceData) {
-        await updateProfessionalServices(serviceData.id);
-        
-        toast({
-          title: "Sucesso",
-          description: "Serviço criado com sucesso",
-        });
-        setDialogOpen(false);
-        fetchServices();
-      }
+      const newService: Service = {
+        id: Date.now().toString(),
+        name: formData.name,
+        description: formData.description || null,
+        duration_minutes: formData.duration_minutes,
+        price: formData.price,
+        status: formData.status,
+        professional_ids: formData.professional_ids,
+      };
+      setServices([...services, newService]);
+      toast({
+        title: "Sucesso",
+        description: "Serviço criado com sucesso",
+      });
     }
 
+    setDialogOpen(false);
     resetForm();
   };
 
-  const updateProfessionalServices = async (serviceId: string) => {
-    await supabase
-      .from("professional_services")
-      .delete()
-      .eq("service_id", serviceId);
-
-    if (formData.professional_ids.length > 0) {
-      const associations = formData.professional_ids.map(professionalId => ({
-        professional_id: professionalId,
-        service_id: serviceId,
-      }));
-
-      await supabase
-        .from("professional_services")
-        .insert(associations);
-    }
-  };
-
-  const handleEdit = async (service: Service) => {
+  const handleEdit = (service: Service) => {
     setEditingService(service);
-    
-    const { data: associations } = await supabase
-      .from("professional_services")
-      .select("professional_id")
-      .eq("service_id", service.id);
-
     setFormData({
       name: service.name,
       description: service.description || "",
       duration_minutes: service.duration_minutes,
       price: service.price,
       status: service.status,
-      professional_ids: associations?.map(a => a.professional_id) || [],
+      professional_ids: service.professional_ids,
     });
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este serviço?")) return;
 
-    const { error } = await supabase.from("services").delete().eq("id", id);
-
-    if (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir serviço",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Sucesso",
-        description: "Serviço excluído com sucesso",
-      });
-      fetchServices();
-    }
+    setServices(services.filter(s => s.id !== id));
+    toast({
+      title: "Sucesso",
+      description: "Serviço excluído com sucesso",
+    });
   };
 
   const resetForm = () => {
@@ -424,65 +326,61 @@ const Services = () => {
         </Select>
       </div>
 
-      {loading ? (
-        <div className="text-center py-8">Carregando...</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredServices.map((service) => (
-            <Card key={service.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{service.name}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {service.description || "Sem descrição"}
-                    </CardDescription>
-                  </div>
-                  <Badge variant={service.status === "active" ? "default" : "secondary"}>
-                    {service.status === "active" ? "Ativo" : "Inativo"}
-                  </Badge>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredServices.map((service) => (
+          <Card key={service.id}>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{service.name}</CardTitle>
+                  <CardDescription className="mt-1">
+                    {service.description || "Sem descrição"}
+                  </CardDescription>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{service.duration_minutes} minutos</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <DollarSign className="h-4 w-4" />
-                    <span>
-                      R${" "}
-                      {service.price.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
+                <Badge variant={service.status === "active" ? "default" : "secondary"}>
+                  {service.status === "active" ? "Ativo" : "Inativo"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>{service.duration_minutes} minutos</span>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(service)}
-                    className="flex-1"
-                  >
-                    <Pencil className="h-4 w-4 mr-1" /> Editar
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(service.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <DollarSign className="h-4 w-4" />
+                  <span>
+                    R${" "}
+                    {service.price.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEdit(service)}
+                  className="flex-1"
+                >
+                  <Pencil className="h-4 w-4 mr-1" /> Editar
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDelete(service.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      {!loading && filteredServices.length === 0 && (
+      {filteredServices.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">Nenhum serviço encontrado</p>
         </div>
