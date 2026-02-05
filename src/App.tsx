@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Professionals from "./pages/Professionals";
 import Services from "./pages/Services";
 import Appointments from "./pages/Appointments";
+import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
@@ -54,6 +55,11 @@ const App = () => (
           <Route path="/appointments" element={
             <DashboardLayout>
               <Appointments />
+            </DashboardLayout>
+          } />
+          <Route path="/financial" element={
+            <DashboardLayout>
+              <Financial />
             </DashboardLayout>
           } />
           <Route path="*" element={<NotFound />} />
