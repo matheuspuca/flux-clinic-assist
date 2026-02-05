@@ -2,17 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Professionals from "./pages/Professionals";
 import Services from "./pages/Services";
 import Appointments from "./pages/Appointments";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
@@ -38,43 +34,31 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Dashboard />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/professionals" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Professionals />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/services" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Services />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/appointments" element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Appointments />
-                </DashboardLayout>
-              </ProtectedRoute>
-            } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Chatbot />
-        </AuthProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          } />
+          <Route path="/professionals" element={
+            <DashboardLayout>
+              <Professionals />
+            </DashboardLayout>
+          } />
+          <Route path="/services" element={
+            <DashboardLayout>
+              <Services />
+            </DashboardLayout>
+          } />
+          <Route path="/appointments" element={
+            <DashboardLayout>
+              <Appointments />
+            </DashboardLayout>
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Chatbot />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

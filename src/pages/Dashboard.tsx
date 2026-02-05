@@ -1,36 +1,7 @@
-import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Calendar, Users, Activity, TrendingUp, User } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { Calendar, Users, Activity, TrendingUp } from "lucide-react";
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
-  const [clinic, setClinic] = useState<any>(null);
-
-  useEffect(() => {
-    fetchUserData();
-  }, [user]);
-
-  const fetchUserData = async () => {
-    if (!user) return;
-
-    try {
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*, clinics(*)")
-        .eq("id", user.id)
-        .single();
-
-      if (profileData) {
-        setProfile(profileData);
-        setClinic(profileData.clinics);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar dados do usuário:", error);
-    }
-  };
   const mockAppointments = [
     { id: 1, patient: "João Silva", service: "Consulta", time: "09:00", professional: "Dr. Carlos" },
     { id: 2, patient: "Maria Santos", service: "Exame", time: "10:30", professional: "Dra. Ana" },
@@ -42,17 +13,6 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          {profile && (
-            <Card className="p-4 border-border">
-              <div className="flex items-center gap-3">
-                <User className="w-8 h-8 text-primary" />
-                <div>
-                  <p className="font-semibold text-card-foreground">{profile.full_name}</p>
-                  <p className="text-sm text-muted-foreground">{clinic?.name || "Carregando..."}</p>
-                </div>
-              </div>
-            </Card>
-          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

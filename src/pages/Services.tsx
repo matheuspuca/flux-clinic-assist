@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,7 +47,6 @@ interface Professional {
 }
 
 const Services = () => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
@@ -70,11 +68,9 @@ const Services = () => {
   useEffect(() => {
     fetchServices();
     fetchProfessionals();
-  }, [user]);
+  }, []);
 
   const fetchServices = async () => {
-    if (!user) return;
-
     setLoading(true);
     const { data, error } = await supabase
       .from("services")
@@ -94,8 +90,6 @@ const Services = () => {
   };
 
   const fetchProfessionals = async () => {
-    if (!user) return;
-
     const { data, error } = await supabase
       .from("professionals")
       .select("id, full_name, specialty")
@@ -110,23 +104,6 @@ const Services = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!user) return;
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("clinic_id")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile) {
-      toast({
-        title: "Erro",
-        description: "Perfil não encontrado",
-        variant: "destructive",
-      });
-      return;
-    }
 
     if (editingService) {
       const { error } = await supabase
@@ -147,7 +124,6 @@ const Services = () => {
           variant: "destructive",
         });
       } else {
-        // Update professional associations
         await updateProfessionalServices(editingService.id);
         
         toast({
@@ -158,10 +134,17 @@ const Services = () => {
         fetchServices();
       }
     } else {
+      // Buscar a primeira clínica disponível
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("id")
+        .limit(1)
+        .single();
+
       const { data: serviceData, error } = await supabase
         .from("services")
         .insert({
-          clinic_id: profile.clinic_id,
+          clinic_id: clinicData?.id,
           name: formData.name,
           description: formData.description,
           duration_minutes: formData.duration_minutes,
@@ -178,7 +161,6 @@ const Services = () => {
           variant: "destructive",
         });
       } else if (serviceData) {
-        // Add professional associations
         await updateProfessionalServices(serviceData.id);
         
         toast({
@@ -194,13 +176,11 @@ const Services = () => {
   };
 
   const updateProfessionalServices = async (serviceId: string) => {
-    // Delete existing associations
     await supabase
       .from("professional_services")
       .delete()
       .eq("service_id", serviceId);
 
-    // Add new associations
     if (formData.professional_ids.length > 0) {
       const associations = formData.professional_ids.map(professionalId => ({
         professional_id: professionalId,
@@ -216,7 +196,6 @@ const Services = () => {
   const handleEdit = async (service: Service) => {
     setEditingService(service);
     
-    // Fetch professional associations
     const { data: associations } = await supabase
       .from("professional_services")
       .select("professional_id")

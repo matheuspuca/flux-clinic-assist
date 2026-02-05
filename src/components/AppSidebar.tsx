@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, LogOut, Briefcase, Calendar } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Calendar } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useAuth } from "@/contexts/AuthContext";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
 import {
@@ -13,12 +12,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   SidebarHeader,
-  SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -30,7 +26,6 @@ const menuItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut } = useAuth();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
@@ -67,17 +62,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="p-4">
-        <Button
-          variant="ghost"
-          onClick={signOut}
-          className="w-full justify-start"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          {open && <span>Sair</span>}
-        </Button>
-      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +39,6 @@ type Professional = {
 };
 
 const Professionals = () => {
-  const { user } = useAuth();
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,18 +64,9 @@ const Professionals = () => {
 
   const fetchProfessionals = async () => {
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("clinic_id")
-        .eq("id", user?.id)
-        .single();
-
-      if (!profile) return;
-
       const { data, error } = await supabase
         .from("professionals")
         .select("*")
-        .eq("clinic_id", profile.clinic_id)
         .order("full_name");
 
       if (error) throw error;
@@ -150,17 +139,13 @@ const Professionals = () => {
     
     try {
       const validatedData = professionalSchema.parse(formData);
-      
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("clinic_id")
-        .eq("id", user?.id)
-        .single();
 
-      if (!profile) {
-        toast.error("Perfil não encontrado");
-        return;
-      }
+      // Buscar a primeira clínica disponível
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("id")
+        .limit(1)
+        .single();
 
       if (editingProfessional) {
         const { error } = await supabase
@@ -174,7 +159,7 @@ const Professionals = () => {
         const { error } = await supabase
           .from("professionals")
           .insert([{
-            clinic_id: profile.clinic_id,
+            clinic_id: clinicData?.id,
             full_name: validatedData.full_name,
             specialty: validatedData.specialty,
             phone: validatedData.phone || null,
