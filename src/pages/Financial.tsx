@@ -142,7 +142,7 @@ const generateMockTransactions = (): Transaction[] => {
   return transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-const CHART_COLORS = ["#2563EB", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16"];
+const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--info))", "hsl(var(--chart-2))"];
 
 const Financial = () => {
   const [transactions, setTransactions] = useState<Transaction[]>(generateMockTransactions());
@@ -361,11 +361,11 @@ const Financial = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Pago</Badge>;
+        return <Badge className="bg-accent/20 text-accent border-accent/30 dark:bg-accent/30 dark:text-accent-foreground hover:bg-accent/30">Pago</Badge>;
       case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Pendente</Badge>;
+        return <Badge className="bg-warning/20 text-warning border-warning/30 dark:bg-warning/30 hover:bg-warning/30">Pendente</Badge>;
       case "overdue":
-        return <Badge className="bg-red-100 text-red-700 hover:bg-red-100">Atrasado</Badge>;
+        return <Badge className="bg-destructive/20 text-destructive border-destructive/30 dark:bg-destructive/30 hover:bg-destructive/30">Atrasado</Badge>;
       default:
         return null;
     }
@@ -379,7 +379,7 @@ const Financial = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

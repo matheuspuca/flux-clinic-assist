@@ -156,8 +156,8 @@ const Services = () => {
   });
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-background p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Serviços</h1>
           <p className="text-muted-foreground">
@@ -254,7 +254,7 @@ const Services = () => {
               </div>
               <div>
                 <Label>Profissionais Habilitados</Label>
-                <div className="space-y-2 mt-2 border rounded-md p-4 max-h-48 overflow-y-auto">
+                <div className="space-y-2 mt-2 border border-border rounded-md p-4 max-h-48 overflow-y-auto bg-muted/30">
                   {professionals.map((prof) => (
                     <div key={prof.id} className="flex items-center space-x-2">
                       <Checkbox
@@ -307,37 +307,42 @@ const Services = () => {
         </Dialog>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <Input
-          placeholder="Buscar serviços..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="active">Ativos</SelectItem>
-            <SelectItem value="inactive">Inativos</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Card className="p-4 border-border">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Input
+            placeholder="Buscar serviços..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1"
+          />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="active">Ativos</SelectItem>
+              <SelectItem value="inactive">Inativos</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((service) => (
-          <Card key={service.id}>
+          <Card key={service.id} className="border-border hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <CardTitle className="text-lg">{service.name}</CardTitle>
+                  <CardTitle className="text-lg text-card-foreground">{service.name}</CardTitle>
                   <CardDescription className="mt-1">
                     {service.description || "Sem descrição"}
                   </CardDescription>
                 </div>
-                <Badge variant={service.status === "active" ? "default" : "secondary"}>
+                <Badge 
+                  variant={service.status === "active" ? "default" : "secondary"}
+                  className={service.status === "active" ? "bg-accent text-accent-foreground" : ""}
+                >
                   {service.status === "active" ? "Ativo" : "Inativo"}
                 </Badge>
               </div>

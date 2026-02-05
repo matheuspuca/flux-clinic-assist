@@ -265,10 +265,10 @@ const Inventory = () => {
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { label: string; className: string }> = {
-      normal: { label: "Normal", className: "bg-green-100 text-green-700 border-green-200" },
-      low: { label: "Baixo", className: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-      critical: { label: "Crítico", className: "bg-red-100 text-red-700 border-red-200" },
-      expired: { label: "Vencido", className: "bg-gray-100 text-gray-700 border-gray-200" }
+      normal: { label: "Normal", className: "bg-accent/20 text-accent border-accent/30 dark:bg-accent/30 dark:text-accent-foreground" },
+      low: { label: "Baixo", className: "bg-warning/20 text-warning border-warning/30 dark:bg-warning/30" },
+      critical: { label: "Crítico", className: "bg-destructive/20 text-destructive border-destructive/30 dark:bg-destructive/30" },
+      expired: { label: "Vencido", className: "bg-muted text-muted-foreground border-border" }
     };
     const v = variants[status] || variants.normal;
     return <Badge className={v.className}>{v.label}</Badge>;

@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -180,17 +181,20 @@ const Professionals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Profissionais</h1>
+    <div className="min-h-screen bg-background p-6 space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Profissionais</h1>
+            <p className="text-muted-foreground">Gerencie os profissionais da clínica</p>
+          </div>
           <Button onClick={() => handleOpenDialog()}>
             <Plus className="mr-2 h-4 w-4" />
             Adicionar Profissional
           </Button>
         </div>
 
-        <Card className="p-6 mb-6 border-border">
+        <Card className="p-4 border-border">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -223,21 +227,22 @@ const Professionals = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProfessionals.map((professional) => (
-            <Card key={professional.id} className="p-6 border-border">
+            <Card key={professional.id} className="p-6 border-border hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-semibold text-card-foreground">
                     {professional.full_name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <Badge className="mt-1 bg-primary/10 text-primary border-primary/20">
                     {professional.specialty}
-                  </p>
+                  </Badge>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleOpenDialog(professional)}
+                    className="h-8 w-8"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -245,21 +250,24 @@ const Professionals = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(professional.id)}
+                    className="h-8 w-8"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               </div>
-              {professional.phone && (
-                <p className="text-sm text-muted-foreground mb-2">
-                  {professional.phone}
-                </p>
-              )}
-              {professional.email && (
-                <p className="text-sm text-muted-foreground">
-                  {professional.email}
-                </p>
-              )}
+              <div className="space-y-1 pt-2 border-t border-border">
+                {professional.phone && (
+                  <p className="text-sm text-muted-foreground">
+                    📞 {professional.phone}
+                  </p>
+                )}
+                {professional.email && (
+                  <p className="text-sm text-muted-foreground">
+                    ✉️ {professional.email}
+                  </p>
+                )}
+              </div>
             </Card>
           ))}
         </div>
