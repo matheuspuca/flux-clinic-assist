@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,7 +58,6 @@ interface Professional {
 }
 
 const Appointments = () => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -80,12 +78,10 @@ const Appointments = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      fetchAppointments();
-      fetchServices();
-      fetchProfessionals();
-    }
-  }, [user, selectedDate]);
+    fetchAppointments();
+    fetchServices();
+    fetchProfessionals();
+  }, [selectedDate]);
 
   useEffect(() => {
     const channel = supabase
@@ -160,23 +156,6 @@ const Appointments = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user) return;
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("clinic_id")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile) {
-      toast({
-        title: "Erro",
-        description: "Perfil não encontrado",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const selectedService = services.find((s) => s.id === formData.service_id);
     if (!selectedService) return;
 
@@ -187,8 +166,15 @@ const Appointments = () => {
     const endsAt = new Date(startsAt);
     endsAt.setMinutes(endsAt.getMinutes() + selectedService.duration_minutes);
 
+    // Buscar a primeira clínica disponível
+    const { data: clinicData } = await supabase
+      .from("clinics")
+      .select("id")
+      .limit(1)
+      .single();
+
     const { error } = await supabase.from("appointments").insert({
-      clinic_id: profile.clinic_id,
+      clinic_id: clinicData?.id,
       service_id: formData.service_id,
       professional_id: formData.professional_id,
       patient_name: formData.patient_name,

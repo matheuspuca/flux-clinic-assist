@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -14,7 +13,6 @@ interface Message {
 }
 
 export const Chatbot = () => {
-  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -25,34 +23,13 @@ export const Chatbot = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [clinicId, setClinicId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (user) {
-      fetchClinicId();
-    }
-  }, [user]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const fetchClinicId = async () => {
-    if (!user) return;
-
-    const { data } = await supabase
-      .from("profiles")
-      .select("clinic_id")
-      .eq("id", user.id)
-      .single();
-
-    if (data) {
-      setClinicId(data.clinic_id);
-    }
-  };
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -69,7 +46,7 @@ export const Chatbot = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke("chatbot", {
-        body: { message: input, clinicId },
+        body: { message: input },
       });
 
       if (error) throw error;
