@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, Package } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
 import {
@@ -13,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -64,6 +66,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="p-2">
+        <ThemeToggle />
+      </SidebarFooter>
     </Sidebar>
   );
 }
