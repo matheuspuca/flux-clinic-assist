@@ -20,11 +20,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
   <SidebarProvider>
     <div className="min-h-screen flex w-full">
       <AppSidebar />
-      <main className="flex-1">
-        <div className="h-12 flex items-center border-b border-border bg-background">
-          <SidebarTrigger className="ml-4" />
+      <main className="flex-1 min-w-0 overflow-x-hidden">
+        <div className="h-14 md:h-12 flex items-center border-b border-border bg-background px-4 sticky top-0 z-40">
+          <SidebarTrigger />
         </div>
-        {children}
+        <div className="overflow-x-hidden">
+          {children}
+        </div>
       </main>
     </div>
   </SidebarProvider>

@@ -181,35 +181,33 @@ const Professionals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="min-h-screen bg-background p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Profissionais</h1>
-            <p className="text-muted-foreground">Gerencie os profissionais da clínica</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Profissionais</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Gerencie os profissionais da clínica</p>
           </div>
-          <Button onClick={() => handleOpenDialog()}>
+          <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Adicionar Profissional
           </Button>
         </div>
 
-        <Card className="p-4 border-border">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Buscar por nome ou especialidade..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+        <Card className="p-3 md:p-4 border-border">
+          <div className="flex flex-col gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar por nome ou especialidade..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10"
+              />
             </div>
-            <div className="w-full md:w-64">
+            <div className="w-full">
               <Select value={specialtyFilter} onValueChange={handleSpecialtyFilterChange}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full sm:w-64">
                   <SelectValue placeholder="Filtrar por especialidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -225,10 +223,10 @@ const Professionals = () => {
           </div>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {filteredProfessionals.map((professional) => (
-            <Card key={professional.id} className="p-6 border-border hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
+            <Card key={professional.id} className="p-4 md:p-6 border-border hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-3 md:mb-4">
                 <div>
                   <h3 className="text-xl font-semibold text-card-foreground">
                     {professional.full_name}

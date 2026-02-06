@@ -264,27 +264,26 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Visão executiva da sua clínica</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Visão executiva da sua clínica</p>
           </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <div className="text-right">
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <div className="text-left sm:text-right">
               <p className="text-xs text-muted-foreground">Hoje</p>
-              <p className="text-sm font-medium text-foreground">
-                {format(today, "d 'de' MMMM, yyyy", { locale: ptBR })}
+              <p className="text-xs sm:text-sm font-medium text-foreground">
+                {format(today, "d 'de' MMMM", { locale: ptBR })}
               </p>
             </div>
           </div>
         </div>
 
         {/* Smart KPIs Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4">
           <SmartKPI
             title="Agendamentos Hoje"
             value={metrics.todayCount}
@@ -338,14 +337,14 @@ const Dashboard = () => {
         </div>
 
         {/* Main Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Appointments Trend */}
           <BIChart
             title="Tendência de Agendamentos"
             subtitle="Últimos 14 dias"
             icon={BarChart3}
           >
-            <div className="h-72">
+            <div className="h-56 md:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={appointmentsByDay}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -375,7 +374,7 @@ const Dashboard = () => {
             subtitle="Últimos 14 dias"
             icon={TrendingUp}
           >
-            <div className="h-72">
+            <div className="h-56 md:h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueByDay}>
                   <defs>
@@ -409,10 +408,10 @@ const Dashboard = () => {
         </div>
 
         {/* Analytics Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Service Distribution */}
           <BIChart title="Serviços Mais Realizados" icon={PieChartIcon}>
-            <div className="h-52">
+            <div className="h-44 md:h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -460,7 +459,7 @@ const Dashboard = () => {
 
           {/* Professional Performance */}
           <BIChart title="Desempenho por Profissional" icon={Users}>
-            <div className="h-52">
+            <div className="h-44 md:h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={professionalPerformance} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -493,7 +492,7 @@ const Dashboard = () => {
 
           {/* Hourly Distribution */}
           <BIChart title="Distribuição por Horário" icon={Clock}>
-            <div className="h-52">
+            <div className="h-44 md:h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={hourlyDistribution}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -517,39 +516,40 @@ const Dashboard = () => {
         </div>
 
         {/* Calendar */}
-        <Card className="border-border shadow-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                Calendário de Agendamentos
+        <Card className="border-border shadow-sm overflow-hidden">
+          <CardHeader className="pb-3 md:pb-4 px-3 md:px-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                <span className="hidden sm:inline">Calendário de Agendamentos</span>
+                <span className="sm:hidden">Calendário</span>
               </CardTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-7 w-7 md:h-8 md:w-8"
                   onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </Button>
-                <span className="text-sm font-medium min-w-28 text-center">
-                  {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+                <span className="text-xs md:text-sm font-medium min-w-20 md:min-w-28 text-center capitalize">
+                  {format(currentMonth, "MMM yyyy", { locale: ptBR })}
                 </span>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-7 w-7 md:h-8 md:w-8"
                   onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </Button>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            {/* Legend */}
-            <div className="flex flex-wrap gap-4 mb-4">
+          <CardContent className="px-2 md:px-6 pb-3 md:pb-6">
+            {/* Legend - Hidden on mobile */}
+            <div className="hidden sm:flex flex-wrap gap-4 mb-4">
               {mockProfessionals.map(prof => (
                 <div key={prof.id} className="flex items-center gap-2">
                   <div
@@ -562,18 +562,19 @@ const Dashboard = () => {
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
+            <div className="grid grid-cols-7 gap-0.5 md:gap-1">
+              {["D", "S", "T", "Q", "Q", "S", "S"].map((day, i) => (
                 <div
-                  key={day}
-                  className="h-8 flex items-center justify-center text-xs font-medium text-muted-foreground"
+                  key={`${day}-${i}`}
+                  className="h-6 md:h-8 flex items-center justify-center text-[10px] md:text-xs font-medium text-muted-foreground"
                 >
-                  {day}
+                  <span className="sm:hidden">{day}</span>
+                  <span className="hidden sm:inline">{["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][i]}</span>
                 </div>
               ))}
               
               {Array.from({ length: startDayOfWeek }).map((_, index) => (
-                <div key={`empty-${index}`} className="h-20 bg-muted/30 rounded-lg" />
+                <div key={`empty-${index}`} className="h-12 md:h-20 bg-muted/30 rounded-md md:rounded-lg" />
               ))}
               
               {daysInMonth.map(date => {
@@ -583,16 +584,16 @@ const Dashboard = () => {
                 return (
                   <div
                     key={date.toISOString()}
-                    className={`h-20 p-1 rounded-lg border transition-all ${
+                    className={`h-12 md:h-20 p-0.5 md:p-1 rounded-md md:rounded-lg border transition-all ${
                       isToday
                         ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border hover:border-primary/50 hover:bg-muted/30"
                     }`}
                   >
-                    <div className={`text-xs font-medium mb-1 ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                    <div className={`text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-center md:text-left ${isToday ? "text-primary" : "text-muted-foreground"}`}>
                       {format(date, "d")}
                     </div>
-                    <div className="space-y-0.5 overflow-y-auto max-h-12">
+                    <div className="hidden md:block space-y-0.5 overflow-y-auto max-h-12">
                       {dayAppointments.slice(0, 2).map(apt => (
                         <div
                           key={apt.id}
@@ -612,6 +613,18 @@ const Dashboard = () => {
                         </div>
                       )}
                     </div>
+                    {/* Mobile: Show dot indicator */}
+                    {dayAppointments.length > 0 && (
+                      <div className="md:hidden flex justify-center gap-0.5">
+                        {dayAppointments.slice(0, 3).map(apt => (
+                          <div
+                            key={apt.id}
+                            className="w-1 h-1 rounded-full"
+                            style={{ backgroundColor: apt.professional_color }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -621,40 +634,40 @@ const Dashboard = () => {
 
         {/* Today's Appointments */}
         <Card className="border-border shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
+          <CardHeader className="pb-3 md:pb-4 px-3 md:px-6">
+            <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
+              <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
               Agenda de Hoje
-              <Badge variant="secondary" className="ml-2">{todayAppointments.length}</Badge>
+              <Badge variant="secondary" className="ml-2 text-xs">{todayAppointments.length}</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 md:px-6 pb-3 md:pb-6">
             {todayAppointments.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
+              <p className="text-center text-muted-foreground py-6 md:py-8 text-sm">
                 Nenhum agendamento para hoje
               </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
                 {todayAppointments.map(apt => (
                   <div
                     key={apt.id}
                     onClick={() => handleAppointmentClick(apt)}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/60 cursor-pointer transition-all border border-transparent hover:border-border"
+                    className="flex items-center justify-between p-2.5 md:p-3 rounded-lg bg-muted/40 hover:bg-muted/60 cursor-pointer transition-all border border-transparent hover:border-border"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
                       <div
-                        className="w-1 h-10 rounded-full"
+                        className="w-1 h-8 md:h-10 rounded-full flex-shrink-0"
                         style={{ backgroundColor: apt.professional_color }}
                       />
-                      <div>
-                        <p className="font-medium text-sm text-foreground">{apt.patient_name}</p>
-                        <p className="text-xs text-muted-foreground">
+                      <div className="min-w-0">
+                        <p className="font-medium text-xs md:text-sm text-foreground truncate">{apt.patient_name}</p>
+                        <p className="text-[10px] md:text-xs text-muted-foreground truncate">
                           {apt.service_name}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-sm text-primary">
+                    <div className="text-right flex-shrink-0 ml-2">
+                      <p className="font-semibold text-xs md:text-sm text-primary">
                         {format(apt.starts_at, "HH:mm")}
                       </p>
                       {getStatusBadge(apt.status)}
@@ -669,7 +682,7 @@ const Dashboard = () => {
 
       {/* Appointment Detail Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-md">
           <DialogHeader>
             <DialogTitle>Detalhes do Agendamento</DialogTitle>
           </DialogHeader>

@@ -156,21 +156,21 @@ const Services = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="min-h-screen bg-background p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Serviços</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Serviços</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Gerencie os serviços oferecidos pela clínica
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button onClick={resetForm} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" /> Novo Serviço
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingService ? "Editar Serviço" : "Novo Serviço"}
@@ -199,7 +199,7 @@ const Services = () => {
                   rows={3}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="duration">Duração (minutos) *</Label>
                   <Input
@@ -307,16 +307,16 @@ const Services = () => {
         </Dialog>
       </div>
 
-      <Card className="p-4 border-border">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <Card className="p-3 md:p-4 border-border">
+        <div className="flex flex-col gap-3">
           <Input
             placeholder="Buscar serviços..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
+            className="w-full"
           />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -328,7 +328,7 @@ const Services = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredServices.map((service) => (
           <Card key={service.id} className="border-border hover:shadow-md transition-shadow">
             <CardHeader>
