@@ -173,10 +173,22 @@
   }
   
   .kpi-card {
-    @apply bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-card border border-border rounded-lg md:rounded-xl p-3 md:p-5 shadow-sm hover:shadow-md transition-all duration-300;
   }
   
   .chart-container {
-    @apply bg-card border border-border rounded-xl p-6 shadow-sm;
+    @apply bg-card border border-border rounded-lg md:rounded-xl shadow-sm;
+  }
+  
+  /* Mobile touch targets */
+  @media (max-width: 640px) {
+    .touch-target {
+      @apply min-h-[44px] min-w-[44px];
+    }
+  }
+  
+  /* Prevent horizontal overflow on mobile */
+  .overflow-x-safe {
+    @apply overflow-x-auto scrollbar-thin scrollbar-thumb-border;
   }
 }

@@ -379,23 +379,23 @@ const Financial = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
+    <div className="min-h-screen bg-background p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Financeiro</h1>
-          <p className="text-muted-foreground">Gestão financeira completa da clínica</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Financeiro</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Gestão financeira completa da clínica</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 flex-1 sm:flex-none">
                 <CalendarIcon className="h-4 w-4" />
-                {format(selectedMonth, "MMMM yyyy", { locale: ptBR })}
+                <span className="truncate">{format(selectedMonth, "MMM yyyy", { locale: ptBR })}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={selectedMonth}
@@ -407,12 +407,12 @@ const Financial = () => {
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button className="gap-2 flex-1 sm:flex-none">
                 <Plus className="h-4 w-4" />
-                Nova Transação
+                <span className="hidden xs:inline">Nova Transação</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingTransaction ? "Editar Transação" : "Nova Transação"}
@@ -423,7 +423,7 @@ const Financial = () => {
               </DialogHeader>
               
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
                   <Button
                     type="button"
                     variant={formData.type === "income" ? "default" : "outline"}

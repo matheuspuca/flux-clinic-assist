@@ -207,21 +207,21 @@ const Appointments = () => {
   ).sort((a, b) => a.starts_at.getTime() - b.starts_at.getTime());
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-6 lg:p-8 min-h-screen bg-background">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Agendamentos</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Agendamentos</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Gerencie os agendamentos da clínica
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button onClick={resetForm} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" /> Novo Agendamento
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Novo Agendamento</DialogTitle>
             </DialogHeader>
@@ -237,7 +237,7 @@ const Appointments = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="patient_phone">Telefone</Label>
                   <Input
@@ -302,7 +302,7 @@ const Appointments = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Data *</Label>
                   <Popover>
@@ -370,10 +370,10 @@ const Appointments = () => {
       </div>
 
       <div className="mb-6">
-        <Label>Data</Label>
+        <Label className="text-sm font-medium">Data</Label>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full max-w-xs">
+            <Button variant="outline" className="w-full sm:max-w-xs mt-1">
               <CalendarIcon className="mr-2 h-4 w-4" />
               {format(selectedDate, "PPP", { locale: ptBR })}
             </Button>
@@ -393,20 +393,20 @@ const Appointments = () => {
         {filteredAppointments.map((apt) => (
           <div
             key={apt.id}
-            className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
+            className="border border-border rounded-lg p-3 md:p-4 hover:bg-accent/50 transition-colors"
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
                   <div
-                    className={`w-3 h-3 rounded-full ${getStatusColor(
+                    className={`w-3 h-3 rounded-full flex-shrink-0 ${getStatusColor(
                       apt.status
                     )}`}
                   />
-                  <h3 className="font-semibold text-lg">{apt.patient_name}</h3>
-                  <Badge variant="outline">{getStatusLabel(apt.status)}</Badge>
+                  <h3 className="font-semibold text-base md:text-lg truncate">{apt.patient_name}</h3>
+                  <Badge variant="outline" className="text-xs">{getStatusLabel(apt.status)}</Badge>
                 </div>
-                <div className="text-sm text-muted-foreground space-y-1 ml-6">
+                <div className="text-sm text-muted-foreground space-y-1 ml-0 sm:ml-5">
                   <p>
                     <span className="font-medium">Serviço:</span>{" "}
                     {getServiceName(apt.service_id)}

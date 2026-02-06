@@ -100,15 +100,15 @@ export const Chatbot = () => {
       {/* Botão Flutuante */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 h-12 w-12 md:h-14 md:w-14 rounded-full shadow-lg z-50"
         size="icon"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {isOpen ? <X className="h-5 w-5 md:h-6 md:w-6" /> : <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />}
       </Button>
 
       {/* Janela do Chat */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 w-96 h-[500px] shadow-2xl z-50 flex flex-col">
+        <Card className="fixed bottom-20 md:bottom-24 right-2 md:right-6 w-[calc(100vw-16px)] sm:w-96 h-[70vh] sm:h-[500px] shadow-2xl z-50 flex flex-col max-w-sm">
           <div className="bg-primary text-primary-foreground p-4 rounded-t-lg">
             <h3 className="font-semibold text-lg">Clara - Assistente Virtual</h3>
             <p className="text-xs opacity-90">FluxAI (Modo Demo)</p>
