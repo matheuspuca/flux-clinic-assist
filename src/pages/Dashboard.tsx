@@ -1,8 +1,6 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, Users, Activity, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Calendar, Users, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon } from "lucide-react";
 import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
