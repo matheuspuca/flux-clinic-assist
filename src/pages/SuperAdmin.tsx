@@ -26,8 +26,6 @@ export default function SuperAdmin() {
   const [selectedClinicId, setSelectedClinicId] = useState<string>("all");
   const [dateRange, setDateRange] = useState("30");
 
-  if (!isSuperAdmin) return <Navigate to="/dashboard" replace />;
-
   // Fetch all clinics
   const { data: clinics = [], isLoading: loadingClinics } = useQuery({
     queryKey: ["sa-clinics"],
