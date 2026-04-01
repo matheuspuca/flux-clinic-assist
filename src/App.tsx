@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { GlobalHeader } from "@/components/GlobalHeader";
+import { CommandPalette } from "@/components/CommandPalette";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Professionals from "./pages/Professionals";
@@ -20,6 +22,7 @@ import Users from "./pages/Users";
 import Patients from "./pages/Patients";
 import ChatbotLogs from "./pages/ChatbotLogs";
 import SettingsPage from "./pages/Settings";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
@@ -30,14 +33,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
     <div className="min-h-screen flex w-full">
       <AppSidebar />
       <main className="flex-1 min-w-0 overflow-x-hidden">
-        <div className="h-14 md:h-12 flex items-center border-b border-border bg-background px-4 sticky top-0 z-40">
-          <SidebarTrigger />
-        </div>
+        <GlobalHeader />
         <div className="overflow-x-hidden">
           {children}
         </div>
       </main>
     </div>
+    <CommandPalette />
   </SidebarProvider>
 );
 
@@ -94,6 +96,7 @@ const AppRoutes = () => (
       { path: "/users", element: <Users /> },
       { path: "/chatbot-logs", element: <ChatbotLogs /> },
       { path: "/settings", element: <SettingsPage /> },
+      { path: "/profile", element: <Profile /> },
     ].map(({ path, element }) => (
       <Route key={path} path={path} element={
         <ProtectedRoute>
