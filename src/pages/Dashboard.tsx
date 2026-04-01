@@ -23,9 +23,6 @@ const CHART_COLORS = [
 ];
 
 const Dashboard = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data: appointments = [], isLoading: loadingAppts } = useAllAppointments();
   const { data: professionals = [] } = useProfessionals();
