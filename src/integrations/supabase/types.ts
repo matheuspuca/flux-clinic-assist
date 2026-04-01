@@ -141,6 +141,72 @@ export type Database = {
           },
         ]
       }
+      clinic_settings: {
+        Row: {
+          address: string | null
+          business_hours: Json | null
+          chatbot_site_enabled: boolean
+          chatbot_whatsapp_enabled: boolean
+          clinic_id: string
+          confirmation_message_template: string | null
+          created_at: string
+          evolution_api_key: string | null
+          evolution_api_url: string | null
+          evolution_instance: string | null
+          extra_instructions: string | null
+          id: string
+          notify_confirmation_whatsapp: boolean
+          notify_reminder_24h: boolean
+          notify_reminder_2h: boolean
+          phone: string | null
+          updated_at: string
+          welcome_message: string | null
+          whatsapp_enabled: boolean
+        }
+        Insert: {
+          address?: string | null
+          business_hours?: Json | null
+          chatbot_site_enabled?: boolean
+          chatbot_whatsapp_enabled?: boolean
+          clinic_id: string
+          confirmation_message_template?: string | null
+          created_at?: string
+          evolution_api_key?: string | null
+          evolution_api_url?: string | null
+          evolution_instance?: string | null
+          extra_instructions?: string | null
+          id?: string
+          notify_confirmation_whatsapp?: boolean
+          notify_reminder_24h?: boolean
+          notify_reminder_2h?: boolean
+          phone?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+          whatsapp_enabled?: boolean
+        }
+        Update: {
+          address?: string | null
+          business_hours?: Json | null
+          chatbot_site_enabled?: boolean
+          chatbot_whatsapp_enabled?: boolean
+          clinic_id?: string
+          confirmation_message_template?: string | null
+          created_at?: string
+          evolution_api_key?: string | null
+          evolution_api_url?: string | null
+          evolution_instance?: string | null
+          extra_instructions?: string | null
+          id?: string
+          notify_confirmation_whatsapp?: boolean
+          notify_reminder_24h?: boolean
+          notify_reminder_2h?: boolean
+          phone?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+          whatsapp_enabled?: boolean
+        }
+        Relationships: []
+      }
       clinics: {
         Row: {
           area: string
