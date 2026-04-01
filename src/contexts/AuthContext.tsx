@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -19,12 +19,25 @@ interface Clinic {
   timezone: string | null;
 }
 
+interface ImpersonationTarget {
+  userId: string;
+  fullName: string;
+  clinicId: string;
+  role: AppRole;
+}
+
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   userRole: AppRole | null;
   clinic: Clinic | null;
   loading: boolean;
+  isSuperAdmin: boolean;
+  // Impersonation
+  isImpersonating: boolean;
+  impersonationTarget: ImpersonationTarget | null;
+  startImpersonation: (target: ImpersonationTarget) => void;
+  stopImpersonation: () => void;
   signOut: () => Promise<void>;
 }
 
@@ -38,32 +51,42 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [userRole, setUserRole] = useState<AppRole | null>(null);
-  const [clinic, setClinic] = useState<Clinic | null>(null);
+  const [realProfile, setRealProfile] = useState<Profile | null>(null);
+  const [realRole, setRealRole] = useState<AppRole | null>(null);
+  const [realClinic, setRealClinic] = useState<Clinic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  // Impersonation state
+  const [impersonationTarget, setImpersonationTarget] = useState<ImpersonationTarget | null>(null);
+  const [impersonatedProfile, setImpersonatedProfile] = useState<Profile | null>(null);
+  const [impersonatedClinic, setImpersonatedClinic] = useState<Clinic | null>(null);
+
+  const isImpersonating = !!impersonationTarget;
+
+  // Effective values (impersonated or real)
+  const profile = isImpersonating ? impersonatedProfile : realProfile;
+  const userRole = isImpersonating ? impersonationTarget?.role ?? null : realRole;
+  const clinic = isImpersonating ? impersonatedClinic : realClinic;
 
   const fetchUserData = async (userId: string) => {
     try {
-      // Fetch profile
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
         .maybeSingle();
 
-      setProfile(profileData);
+      setRealProfile(profileData);
 
-      // Fetch role
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
         .maybeSingle();
 
-      setUserRole(roleData?.role ?? null);
+      setRealRole(roleData?.role ?? null);
 
-      // Fetch clinic
       if (profileData?.clinic_id) {
         const { data: clinicData } = await supabase
           .from("clinics")
@@ -71,14 +94,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq("id", profileData.clinic_id)
           .maybeSingle();
 
-        setClinic(clinicData);
+        setRealClinic(clinicData);
       } else {
-        setClinic(null);
+        setRealClinic(null);
       }
+
+      // Check superadmin
+      const { data: saData } = await supabase.rpc("is_superadmin", { _user_id: userId });
+      setIsSuperAdmin(!!saData);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
+
+  const startImpersonation = useCallback(async (target: ImpersonationTarget) => {
+    // Fetch the target user's profile
+    const { data: targetProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", target.userId)
+      .maybeSingle();
+
+    const { data: targetClinic } = await supabase
+      .from("clinics")
+      .select("*")
+      .eq("id", target.clinicId)
+      .maybeSingle();
+
+    setImpersonatedProfile(targetProfile);
+    setImpersonatedClinic(targetClinic);
+    setImpersonationTarget(target);
+  }, []);
+
+  const stopImpersonation = useCallback(() => {
+    setImpersonationTarget(null);
+    setImpersonatedProfile(null);
+    setImpersonatedClinic(null);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -87,12 +139,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(currentUser);
 
         if (currentUser) {
-          // Use setTimeout to avoid Supabase auth deadlock
           setTimeout(() => fetchUserData(currentUser.id), 0);
         } else {
-          setProfile(null);
-          setUserRole(null);
-          setClinic(null);
+          setRealProfile(null);
+          setRealRole(null);
+          setRealClinic(null);
+          setIsSuperAdmin(false);
+          stopImpersonation();
         }
         setLoading(false);
       }
@@ -112,15 +165,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    stopImpersonation();
     await supabase.auth.signOut();
     setUser(null);
-    setProfile(null);
-    setUserRole(null);
-    setClinic(null);
+    setRealProfile(null);
+    setRealRole(null);
+    setRealClinic(null);
+    setIsSuperAdmin(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, userRole, clinic, loading, signOut }}>
+    <AuthContext.Provider value={{
+      user, profile, userRole, clinic, loading, isSuperAdmin,
+      isImpersonating, impersonationTarget,
+      startImpersonation, stopImpersonation, signOut,
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,7 +1,8 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Users2, UserCheck, Briefcase, Calendar, DollarSign, Package, MessageSquare, Settings, User } from "lucide-react";
+import { LayoutDashboard, Users, Users2, UserCheck, Briefcase, Calendar, DollarSign, Package, MessageSquare, Settings, User, ShieldCheck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useAuth } from "@/contexts/AuthContext";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
 import {
@@ -31,6 +32,7 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const permissions = usePermissions();
+  const { isSuperAdmin } = useAuth();
 
   const isActive = (path: string) => currentPath === path;
 
@@ -52,6 +54,7 @@ export function AppSidebar() {
 
   const userItems: MenuItem[] = [
     { title: "Meu Perfil", url: "/profile", icon: User, visible: true },
+    { title: "Super Admin", url: "/superadmin", icon: ShieldCheck, visible: isSuperAdmin },
   ];
 
   const renderItems = (items: MenuItem[]) =>
