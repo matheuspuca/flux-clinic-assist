@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
+import Patients from "./pages/Patients";
 import ChatbotLogs from "./pages/ChatbotLogs";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
