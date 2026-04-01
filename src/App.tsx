@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
+import ChatbotLogs from "./pages/ChatbotLogs";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
