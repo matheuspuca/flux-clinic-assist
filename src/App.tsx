@@ -23,8 +23,10 @@ import Patients from "./pages/Patients";
 import ChatbotLogs from "./pages/ChatbotLogs";
 import SettingsPage from "./pages/Settings";
 import Profile from "./pages/Profile";
+import SuperAdmin from "./pages/SuperAdmin";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
+import { ImpersonationBanner } from "./components/ImpersonationBanner";
 
 const queryClient = new QueryClient();
 
