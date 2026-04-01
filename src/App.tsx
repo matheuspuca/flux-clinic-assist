@@ -89,6 +89,7 @@ const AppRoutes = () => (
       { path: "/inventory", element: <Inventory /> },
       { path: "/financial", element: <Financial /> },
       { path: "/users", element: <Users /> },
+      { path: "/chatbot-logs", element: <ChatbotLogs /> },
     ].map(({ path, element }) => (
       <Route key={path} path={path} element={
         <ProtectedRoute>
