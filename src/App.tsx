@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
+import Patients from "./pages/Patients";
 import ChatbotLogs from "./pages/ChatbotLogs";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -87,6 +88,7 @@ const AppRoutes = () => (
       { path: "/professionals", element: <Professionals /> },
       { path: "/services", element: <Services /> },
       { path: "/appointments", element: <Appointments /> },
+      { path: "/patients", element: <Patients /> },
       { path: "/inventory", element: <Inventory /> },
       { path: "/financial", element: <Financial /> },
       { path: "/users", element: <Users /> },
