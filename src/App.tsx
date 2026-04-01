@@ -91,6 +91,7 @@ const AppRoutes = () => (
       { path: "/financial", element: <Financial /> },
       { path: "/users", element: <Users /> },
       { path: "/chatbot-logs", element: <ChatbotLogs /> },
+      { path: "/settings", element: <SettingsPage /> },
     ].map(({ path, element }) => (
       <Route key={path} path={path} element={
         <ProtectedRoute>
