@@ -213,6 +213,7 @@ export type Database = {
           cnpj: string | null
           created_at: string
           id: string
+          logo_url: string | null
           name: string
           timezone: string | null
         }
@@ -221,6 +222,7 @@ export type Database = {
           cnpj?: string | null
           created_at?: string
           id?: string
+          logo_url?: string | null
           name: string
           timezone?: string | null
         }
@@ -229,6 +231,7 @@ export type Database = {
           cnpj?: string | null
           created_at?: string
           id?: string
+          logo_url?: string | null
           name?: string
           timezone?: string | null
         }
@@ -273,6 +276,7 @@ export type Database = {
       professionals: {
         Row: {
           clinic_id: string
+          color: string | null
           created_at: string
           email: string | null
           full_name: string
@@ -284,6 +288,7 @@ export type Database = {
         }
         Insert: {
           clinic_id: string
+          color?: string | null
           created_at?: string
           email?: string | null
           full_name: string
@@ -295,6 +300,7 @@ export type Database = {
         }
         Update: {
           clinic_id?: string
+          color?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
