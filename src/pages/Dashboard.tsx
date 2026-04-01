@@ -4,7 +4,6 @@ import { Calendar, Users, DollarSign, XCircle, Target, Zap } from "lucide-react"
 import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SmartKPI } from "@/components/dashboard/SmartKPI";
-import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllAppointments, useProfessionals, useServices } from "@/hooks/useClinicData";
 import ClinicCalendar from "@/components/calendar/ClinicCalendar";
