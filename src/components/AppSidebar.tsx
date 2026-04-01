@@ -1,7 +1,8 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, Package } from "lucide-react";
+import { LayoutDashboard, Users, Users2, Briefcase, Calendar, DollarSign, Package } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { usePermissions } from "@/hooks/usePermissions";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
 import {
@@ -18,21 +19,32 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Profissionais", url: "/professionals", icon: Users },
-  { title: "Serviços", url: "/services", icon: Briefcase },
-  { title: "Agendamentos", url: "/appointments", icon: Calendar },
-  { title: "Estoque", url: "/inventory", icon: Package },
-  { title: "Financeiro", url: "/financial", icon: DollarSign },
-];
+type MenuItem = {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  visible: boolean;
+};
 
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const permissions = usePermissions();
 
   const isActive = (path: string) => currentPath === path;
+
+  const menuItems: MenuItem[] = [
+    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, visible: true },
+    { title: "Profissionais", url: "/professionals", icon: Users, visible: permissions.canManageProfessionals },
+    { title: "Serviços", url: "/services", icon: Briefcase, visible: permissions.canManageServices },
+    { title: "Agendamentos", url: "/appointments", icon: Calendar, visible: true },
+    { title: "Estoque", url: "/inventory", icon: Package, visible: permissions.canViewInventory },
+    { title: "Financeiro", url: "/financial", icon: DollarSign, visible: permissions.canViewFinancial },
+    { title: "Usuários", url: "/users", icon: Users2, visible: permissions.canManageUsers },
+  ];
+
+  const visibleItems = menuItems.filter((item) => item.visible);
 
   return (
     <Sidebar collapsible="icon">
@@ -47,7 +59,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {visibleItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink
