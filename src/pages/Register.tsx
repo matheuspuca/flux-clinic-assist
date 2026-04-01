@@ -120,8 +120,8 @@ const Register = () => {
 
         <div className="relative z-10 flex flex-col items-center justify-center w-full px-16">
           <div className="space-y-8 text-center">
-            <div className="w-24 h-24 mx-auto rounded-3xl bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/10 flex items-center justify-center shadow-2xl">
-              <img src={fluxiaLogo} alt="FluxIA" className="w-14 h-14 object-contain" />
+            <div className="w-[250px] h-[250px] mx-auto flex items-center justify-center">
+              <img src={fluxiaLogo} alt="FluxIA" className="w-full h-full object-contain brightness-0 invert" />
             </div>
             <div className="space-y-3">
               <h1 className="text-4xl font-bold tracking-tight text-primary-foreground">FluxIA</h1>
