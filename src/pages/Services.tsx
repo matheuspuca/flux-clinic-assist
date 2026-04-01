@@ -196,6 +196,8 @@ const Services = () => {
           <p className="text-muted-foreground">Nenhum serviço encontrado</p>
         </div>
       )}
+
+      <ServiceDistributionChart services={services} />
     </div>
   );
 };
