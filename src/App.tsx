@@ -5,12 +5,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Professionals from "./pages/Professionals";
 import Services from "./pages/Services";
 import Appointments from "./pages/Appointments";
 import Inventory from "./pages/Inventory";
 import Financial from "./pages/Financial";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Onboarding from "./pages/Onboarding";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
@@ -32,47 +37,76 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
   </SidebarProvider>
 );
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, profile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (user && profile && !profile.clinic_id) return <Navigate to="/onboarding" replace />;
+
+  return <>{children}</>;
+};
+
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, profile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (user && profile?.clinic_id) return <Navigate to="/dashboard" replace />;
+
+  return <>{children}</>;
+};
+
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+    <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/onboarding" element={
+      <ProtectedRoute><Onboarding /></ProtectedRoute>
+    } />
+    {[
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/professionals", element: <Professionals /> },
+      { path: "/services", element: <Services /> },
+      { path: "/appointments", element: <Appointments /> },
+      { path: "/inventory", element: <Inventory /> },
+      { path: "/financial", element: <Financial /> },
+    ].map(({ path, element }) => (
+      <Route key={path} path={path} element={
+        <ProtectedRoute>
+          <DashboardLayout>{element}</DashboardLayout>
+        </ProtectedRoute>
+      } />
+    ))}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={
-            <DashboardLayout>
-              <Dashboard />
-            </DashboardLayout>
-          } />
-          <Route path="/professionals" element={
-            <DashboardLayout>
-              <Professionals />
-            </DashboardLayout>
-          } />
-          <Route path="/services" element={
-            <DashboardLayout>
-              <Services />
-            </DashboardLayout>
-          } />
-          <Route path="/appointments" element={
-            <DashboardLayout>
-              <Appointments />
-            </DashboardLayout>
-          } />
-          <Route path="/inventory" element={
-            <DashboardLayout>
-              <Inventory />
-            </DashboardLayout>
-          } />
-          <Route path="/financial" element={
-            <DashboardLayout>
-              <Financial />
-            </DashboardLayout>
-          } />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Chatbot />
+        <AuthProvider>
+          <AppRoutes />
+          <Chatbot />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
