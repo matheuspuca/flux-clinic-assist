@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Users2, Briefcase, Calendar, DollarSign, Package } from "lucide-react";
+import { LayoutDashboard, Users, Users2, Briefcase, Calendar, DollarSign, Package, MessageSquare } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -42,6 +42,7 @@ export function AppSidebar() {
     { title: "Estoque", url: "/inventory", icon: Package, visible: permissions.canViewInventory },
     { title: "Financeiro", url: "/financial", icon: DollarSign, visible: permissions.canViewFinancial },
     { title: "Usuários", url: "/users", icon: Users2, visible: permissions.canManageUsers },
+    { title: "Chatbot Logs", url: "/chatbot-logs", icon: MessageSquare, visible: permissions.isAdmin },
   ];
 
   const visibleItems = menuItems.filter((item) => item.visible);

@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
+import ChatbotLogs from "./pages/ChatbotLogs";
 import NotFound from "./pages/NotFound";
 import { Chatbot } from "./components/Chatbot";
 
@@ -88,6 +89,7 @@ const AppRoutes = () => (
       { path: "/inventory", element: <Inventory /> },
       { path: "/financial", element: <Financial /> },
       { path: "/users", element: <Users /> },
+      { path: "/chatbot-logs", element: <ChatbotLogs /> },
     ].map(({ path, element }) => (
       <Route key={path} path={path} element={
         <ProtectedRoute>
