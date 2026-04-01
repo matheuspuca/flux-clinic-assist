@@ -1,7 +1,27 @@
 import { useAuth } from "@/contexts/AuthContext";
 
 export const usePermissions = () => {
-  const { userRole } = useAuth();
+  const { userRole, isSuperAdmin } = useAuth();
+
+  // Superadmin has all permissions
+  if (isSuperAdmin) {
+    return {
+      canManageUsers: true,
+      canManageServices: true,
+      canManageProfessionals: true,
+      canViewFinancial: true,
+      canCreateAppointments: true,
+      canCancelAppointments: true,
+      canCompleteAppointments: true,
+      canViewAllAppointments: true,
+      canManageClinicSettings: true,
+      canViewPatients: true,
+      canViewInventory: true,
+      isAdmin: true,
+      isProfessional: false,
+      isAtendente: false,
+    };
+  }
 
   return {
     canManageUsers: userRole === "admin",
