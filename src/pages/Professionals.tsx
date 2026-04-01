@@ -62,7 +62,7 @@ const Professionals = () => {
     try {
       const validated = professionalSchema.parse(formData);
       if (editingId) {
-        updateMutation.mutate({ id: editingId, ...validated }, { onSuccess: () => setIsDialogOpen(false) });
+        updateMutation.mutate({ id: editingId, full_name: validated.full_name, specialty: validated.specialty, phone: validated.phone, email: validated.email }, { onSuccess: () => setIsDialogOpen(false) });
       } else {
         createMutation.mutate(validated, { onSuccess: () => setIsDialogOpen(false) });
       }
