@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, Users2, UserCheck, Briefcase, Calendar, DollarSign, Package, MessageSquare, Settings, User, ShieldCheck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useAuth } from "@/contexts/AuthContext";
 import fluxiaLogo from "@/assets/fluxia-logo.png";
 
 import {
