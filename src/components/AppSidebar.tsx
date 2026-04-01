@@ -32,6 +32,7 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const permissions = usePermissions();
+  const { isSuperAdmin } = useAuth();
 
   const isActive = (path: string) => currentPath === path;
 
