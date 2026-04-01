@@ -82,7 +82,11 @@ const ChatbotLogs = () => {
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">Nenhum log encontrado</p>
+            <div className="text-center py-8">
+              <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
+              <h3 className="text-lg font-semibold text-foreground mb-1">Nenhum log encontrado</h3>
+              <p className="text-sm text-muted-foreground">As conversas do chatbot aparecerão aqui automaticamente.</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
