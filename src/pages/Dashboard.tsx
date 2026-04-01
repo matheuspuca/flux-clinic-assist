@@ -281,6 +281,7 @@ const Dashboard = () => {
 
         {/* Professional Calendar */}
         <ClinicCalendar />
+      </div>
     </div>
   );
 };
