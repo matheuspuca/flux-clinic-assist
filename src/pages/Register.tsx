@@ -120,15 +120,12 @@ const Register = () => {
 
         <div className="relative z-10 flex flex-col items-center justify-center w-full px-16">
           <div className="space-y-8 text-center">
-            <div className="w-[250px] h-[250px] mx-auto flex items-center justify-center">
+            <div className="w-[300px] h-[300px] mx-auto flex items-center justify-center">
               <img src={fluxiaLogo} alt="FluxIA" className="w-full h-full object-contain brightness-0 invert" />
             </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-primary-foreground">FluxIA</h1>
-              <p className="text-primary-foreground/70 text-lg max-w-xs mx-auto leading-relaxed">
-                Crie sua conta e comece a transformar sua clínica
-              </p>
-            </div>
+            <p className="text-primary-foreground/70 text-lg max-w-xs mx-auto leading-relaxed">
+              Crie sua conta e comece a transformar sua clínica
+            </p>
 
             <div className="pt-8 space-y-4 text-left max-w-xs mx-auto">
               {[
@@ -136,11 +133,11 @@ const Register = () => {
                 "Sem cartão de crédito para começar",
                 "Suporte dedicado para onboarding",
               ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3 text-primary-foreground/60">
+                <div key={i} className="flex items-center gap-3 text-primary-foreground/80">
                   <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                     <Check className="w-3 h-3 text-accent" />
                   </div>
-                  <span className="text-sm">{feature}</span>
+                  <span className="text-sm font-semibold">{feature}</span>
                 </div>
               ))}
             </div>

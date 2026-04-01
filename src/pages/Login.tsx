@@ -63,17 +63,12 @@ const Login = () => {
 
         <div className="relative z-10 flex flex-col items-center justify-center w-full px-16">
           <div className="space-y-8 text-center">
-            <div className="w-[250px] h-[250px] mx-auto flex items-center justify-center">
+            <div className="w-[300px] h-[300px] mx-auto flex items-center justify-center">
               <img src={fluxiaLogo} alt="FluxIA" className="w-full h-full object-contain brightness-0 invert" />
             </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-primary-foreground">
-                FluxIA
-              </h1>
-              <p className="text-primary-foreground/70 text-lg max-w-xs mx-auto leading-relaxed">
-                Gestão inteligente para clínicas modernas
-              </p>
-            </div>
+            <p className="text-primary-foreground/70 text-lg max-w-xs mx-auto leading-relaxed">
+              Gestão inteligente para clínicas modernas
+            </p>
 
             {/* Feature highlights */}
             <div className="pt-8 space-y-4 text-left max-w-xs mx-auto">
@@ -82,9 +77,9 @@ const Login = () => {
                 "Chatbot integrado via WhatsApp",
                 "Dashboard financeiro em tempo real",
               ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3 text-primary-foreground/60">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                  <span className="text-sm">{feature}</span>
+                <div key={i} className="flex items-center gap-3 text-primary-foreground/80">
+                  <div className="w-2 h-2 rounded-full bg-accent shrink-0" />
+                  <span className="text-sm font-semibold">{feature}</span>
                 </div>
               ))}
             </div>
