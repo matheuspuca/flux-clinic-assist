@@ -43,6 +43,7 @@ export function AppSidebar() {
     { title: "Financeiro", url: "/financial", icon: DollarSign, visible: permissions.canViewFinancial },
     { title: "Usuários", url: "/users", icon: Users2, visible: permissions.canManageUsers },
     { title: "Chatbot Logs", url: "/chatbot-logs", icon: MessageSquare, visible: permissions.isAdmin },
+    { title: "Configurações", url: "/settings", icon: Settings, visible: permissions.canManageClinicSettings },
   ];
 
   const visibleItems = menuItems.filter((item) => item.visible);
