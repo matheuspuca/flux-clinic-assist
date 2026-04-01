@@ -8,10 +8,6 @@ import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllAppointments, useProfessionals, useServices } from "@/hooks/useClinicData";
 import ClinicCalendar from "@/components/calendar/ClinicCalendar";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Legend, Line,
-} from "recharts";
 
 const CHART_COLORS = [
   "hsl(220, 70%, 50%)", "hsl(160, 60%, 42%)", "hsl(38, 92%, 50%)",
