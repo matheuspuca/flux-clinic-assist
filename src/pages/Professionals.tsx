@@ -151,6 +151,8 @@ const Professionals = () => {
           </Card>
         )}
 
+        <ProfessionalPerformanceChart professionals={professionals} />
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
