@@ -10,7 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Clock, DollarSign } from "lucide-react";
+import { Plus, Pencil, Trash2, Clock, DollarSign, PieChart as PieChartIcon } from "lucide-react";
+import { BIChart } from "@/components/dashboard/BIChart";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { useAllAppointments } from "@/hooks/useClinicData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useServices, useCreateService, useUpdateService, useDeleteService, useProfessionals } from "@/hooks/useClinicData";
 
@@ -193,8 +196,48 @@ const Services = () => {
           <p className="text-muted-foreground">Nenhum serviço encontrado</p>
         </div>
       )}
+
+      <ServiceDistributionChart services={services} />
     </div>
   );
 };
+
+function ServiceDistributionChart({ services }: { services: any[] }) {
+  const { data: appointments = [] } = useAllAppointments();
+  const COLORS = ["hsl(220,70%,50%)", "hsl(160,60%,42%)", "hsl(38,92%,50%)", "hsl(280,55%,55%)", "hsl(340,65%,50%)"];
+
+  const data = services.map(s => ({
+    name: s.name,
+    value: appointments.filter((a: any) => a.service_id === s.id && a.status === "completed").length,
+  })).filter(s => s.value > 0);
+
+  if (data.length === 0) return null;
+
+  return (
+    <BIChart title="Serviços Mais Realizados" icon={PieChartIcon}>
+      <div className="h-44 md:h-52">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
+              {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+            </Pie>
+            <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="space-y-2 mt-2">
+        {data.map((s, i) => (
+          <div key={s.name} className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+              <span className="text-muted-foreground truncate text-xs">{s.name}</span>
+            </div>
+            <span className="font-medium text-xs">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </BIChart>
+  );
+}
 
 export default Services;

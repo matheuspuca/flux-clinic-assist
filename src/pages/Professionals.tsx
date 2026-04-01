@@ -10,7 +10,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Users } from "lucide-react";
+import { BIChart } from "@/components/dashboard/BIChart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useAllAppointments } from "@/hooks/useClinicData";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -148,6 +151,8 @@ const Professionals = () => {
           </Card>
         )}
 
+        <ProfessionalPerformanceChart professionals={professionals} />
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -189,5 +194,46 @@ const Professionals = () => {
     </div>
   );
 };
+
+function ProfessionalPerformanceChart({ professionals }: { professionals: typeof Array<any> extends never ? any : any[] }) {
+  const { data: appointments = [] } = useAllAppointments();
+  const COLORS = ["hsl(220,70%,50%)", "hsl(160,60%,42%)", "hsl(38,92%,50%)", "hsl(280,55%,55%)", "hsl(340,65%,50%)"];
+
+  const data = professionals.map((p, i) => {
+    const completed = appointments.filter((a: any) => a.professional_id === p.id && a.status === "completed");
+    return {
+      name: p.full_name.split(" ").slice(0, 2).join(" "),
+      atendimentos: completed.length,
+      receita: completed.reduce((acc: number, a: any) => acc + Number(a.services?.price || 0), 0),
+      fill: COLORS[i % COLORS.length],
+    };
+  });
+
+  if (data.every(d => d.atendimentos === 0)) return null;
+
+  return (
+    <BIChart title="Desempenho por Profissional" icon={Users}>
+      <div className="h-44 md:h-52">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+            <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={10} width={90} />
+            <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+            <Bar dataKey="atendimentos" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="mt-3 pt-3 border-t border-border space-y-1">
+        {data.map((p) => (
+          <div key={p.name} className="flex justify-between text-xs">
+            <span className="text-muted-foreground">{p.name}</span>
+            <span className="font-medium text-accent">R$ {p.receita.toLocaleString("pt-BR")}</span>
+          </div>
+        ))}
+      </div>
+    </BIChart>
+  );
+}
 
 export default Professionals;

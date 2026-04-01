@@ -1,22 +1,13 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon } from "lucide-react";
+import { Calendar, Users, DollarSign, XCircle, Target, Zap } from "lucide-react";
 import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SmartKPI } from "@/components/dashboard/SmartKPI";
-import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllAppointments, useProfessionals, useServices } from "@/hooks/useClinicData";
 import ClinicCalendar from "@/components/calendar/ClinicCalendar";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Legend, Line,
-} from "recharts";
 
-const CHART_COLORS = [
-  "hsl(220, 70%, 50%)", "hsl(160, 60%, 42%)", "hsl(38, 92%, 50%)",
-  "hsl(280, 55%, 55%)", "hsl(340, 65%, 50%)",
-];
 
 const Dashboard = () => {
 
@@ -74,62 +65,6 @@ const Dashboard = () => {
     };
   }, [appointments]);
 
-  const appointmentsByDay = useMemo(() => {
-    const days = [];
-    for (let i = 13; i >= 0; i--) {
-      const date = subDays(today, i);
-      const dayAppts = appointments.filter(a => isSameDay(new Date(a.starts_at), date));
-      days.push({
-        day: format(date, "dd/MM"),
-        agendados: dayAppts.length,
-        concluidos: dayAppts.filter(a => a.status === "completed").length,
-        cancelados: dayAppts.filter(a => a.status === "cancelled").length,
-      });
-    }
-    return days;
-  }, [appointments]);
-
-  const revenueByDay = useMemo(() => {
-    const days = [];
-    for (let i = 13; i >= 0; i--) {
-      const date = subDays(today, i);
-      const dayRevenue = appointments
-        .filter(a => isSameDay(new Date(a.starts_at), date) && a.status === "completed")
-        .reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0);
-      days.push({ day: format(date, "dd/MM"), receita: dayRevenue });
-    }
-    return days;
-  }, [appointments]);
-
-  const serviceDistribution = useMemo(() => {
-    return services.map(s => ({
-      name: s.name,
-      value: appointments.filter(a => a.service_id === s.id && a.status === "completed").length,
-      revenue: appointments.filter(a => a.service_id === s.id && a.status === "completed").reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0),
-    })).filter(s => s.value > 0);
-  }, [appointments, services]);
-
-  const professionalPerformance = useMemo(() => {
-    return professionals.map((p, i) => {
-      const profAppts = appointments.filter(a => a.professional_id === p.id && a.status === "completed");
-      return {
-        name: p.full_name.split(" ").slice(0, 2).join(" "),
-        atendimentos: profAppts.length,
-        receita: profAppts.reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0),
-        fill: CHART_COLORS[i % CHART_COLORS.length],
-      };
-    });
-  }, [appointments, professionals]);
-
-  const hourlyDistribution = useMemo(() => {
-    const hours: Record<number, number> = {};
-    for (let h = 8; h <= 18; h++) hours[h] = 0;
-    appointments.filter(a => a.status === "completed").forEach(a => {
-      const h = new Date(a.starts_at).getHours();
-      if (hours[h] !== undefined) hours[h]++;
-    });
-    return Object.entries(hours).map(([h, count]) => ({ hour: `${h}h`, atendimentos: count }));
-  }, [appointments]);
 
   // todayAppointments and calendar state removed — now handled by ClinicCalendar
 
@@ -172,110 +107,6 @@ const Dashboard = () => {
           <SmartKPI title="Total Pacientes" value={metrics.totalPatients} icon={Users} trend="up" insight="Base ativa de clientes" />
           <SmartKPI title="Cancelamentos" value={metrics.cancelled} change={-metrics.cancellationRate} changeLabel="taxa de cancelamento" icon={XCircle} trend={metrics.cancellationRate > 15 ? "down" : "up"} insight={metrics.cancellationRate > 15 ? "Atenção: taxa elevada" : "Dentro do esperado"} />
           <SmartKPI title="Horário de Pico" value={metrics.peakHour} icon={Zap} trend="neutral" insight="Maior concentração de atendimentos" />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <BIChart title="Tendência de Agendamentos" subtitle="Últimos 14 dias" icon={BarChart3}>
-            <div className="h-56 md:h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={appointmentsByDay}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                  <Legend />
-                  <Bar dataKey="agendados" name="Agendados" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="concluidos" name="Concluídos" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
-                  <Line type="monotone" dataKey="cancelados" name="Cancelados" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 3 }} />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-          </BIChart>
-
-          <BIChart title="Evolução de Receita" subtitle="Últimos 14 dias" icon={TrendingUp}>
-            <div className="h-56 md:h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueByDay}>
-                  <defs>
-                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickFormatter={(v) => `R$${v}`} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(value: number) => [`R$ ${value.toLocaleString("pt-BR")}`, "Receita"]} />
-                  <Area type="monotone" dataKey="receita" stroke="hsl(var(--accent))" strokeWidth={2} fill="url(#revenueGradient)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </BIChart>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          <BIChart title="Serviços Mais Realizados" icon={PieChartIcon}>
-            <div className="h-44 md:h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={serviceDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
-                    {serviceDistribution.map((_, index) => <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-2 mt-2">
-              {serviceDistribution.map((s, i) => (
-                <div key={s.name} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                    <span className="text-muted-foreground truncate text-xs">{s.name}</span>
-                  </div>
-                  <span className="font-medium text-xs">{s.value}</span>
-                </div>
-              ))}
-            </div>
-          </BIChart>
-
-          <BIChart title="Desempenho por Profissional" icon={Users}>
-            <div className="h-44 md:h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={professionalPerformance} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={10} width={90} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                  <Bar dataKey="atendimentos" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-3 pt-3 border-t border-border space-y-1">
-              {professionalPerformance.map((p) => (
-                <div key={p.name} className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">{p.name}</span>
-                  <span className="font-medium text-accent">R$ {p.receita.toLocaleString("pt-BR")}</span>
-                </div>
-              ))}
-            </div>
-          </BIChart>
-
-          <BIChart title="Distribuição por Horário" icon={Clock}>
-            <div className="h-44 md:h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={hourlyDistribution}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="hour" stroke="hsl(var(--muted-foreground))" fontSize={10} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
-                  <Bar dataKey="atendimentos" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3 text-center">
-              Horário de pico: <span className="font-semibold text-primary">{metrics.peakHour}</span>
-            </p>
-          </BIChart>
         </div>
 
         {/* Professional Calendar */}
