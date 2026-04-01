@@ -132,29 +132,7 @@ const Dashboard = () => {
     return Object.entries(hours).map(([h, count]) => ({ hour: `${h}h`, atendimentos: count }));
   }, [appointments]);
 
-  const todayAppointments = useMemo(() =>
-    appointments.filter(a => isSameDay(new Date(a.starts_at), today))
-      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()),
-    [appointments]
-  );
-
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
-  const startDayOfWeek = getDay(monthStart);
-
-  const getAppointmentsForDay = (date: Date) => appointments.filter(a => isSameDay(new Date(a.starts_at), date));
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      pending: { label: "Pendente", variant: "outline" },
-      confirmed: { label: "Confirmado", variant: "default" },
-      completed: { label: "Concluído", variant: "secondary" },
-      cancelled: { label: "Cancelado", variant: "destructive" },
-    };
-    const config = variants[status] || variants.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
+  // todayAppointments and calendar state removed — now handled by ClinicCalendar
 
   if (loadingAppts) {
     return (
