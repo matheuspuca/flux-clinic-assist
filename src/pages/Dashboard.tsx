@@ -11,6 +11,7 @@ import { SmartKPI } from "@/components/dashboard/SmartKPI";
 import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllAppointments, useProfessionals, useServices } from "@/hooks/useClinicData";
+import ClinicCalendar from "@/components/calendar/ClinicCalendar";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Legend, Line,
