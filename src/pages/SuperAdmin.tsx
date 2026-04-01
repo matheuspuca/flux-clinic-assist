@@ -156,6 +156,8 @@ export default function SuperAdmin() {
     selectedClinicId === "all" || u.clinic_id === selectedClinicId
   );
 
+  if (!isSuperAdmin) return <Navigate to="/dashboard" replace />;
+
   if (loadingClinics) {
     return (
       <div className="p-6 space-y-4">
