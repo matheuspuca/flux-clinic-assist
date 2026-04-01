@@ -61,10 +61,11 @@ const Professionals = () => {
     e.preventDefault();
     try {
       const validated = professionalSchema.parse(formData);
+      const payload = { full_name: validated.full_name, specialty: validated.specialty, phone: validated.phone || undefined, email: validated.email || undefined };
       if (editingId) {
-        updateMutation.mutate({ id: editingId, full_name: validated.full_name, specialty: validated.specialty, phone: validated.phone, email: validated.email }, { onSuccess: () => setIsDialogOpen(false) });
+        updateMutation.mutate({ id: editingId, ...payload }, { onSuccess: () => setIsDialogOpen(false) });
       } else {
-        createMutation.mutate(validated, { onSuccess: () => setIsDialogOpen(false) });
+        createMutation.mutate(payload, { onSuccess: () => setIsDialogOpen(false) });
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
