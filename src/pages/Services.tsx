@@ -10,7 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Clock, DollarSign } from "lucide-react";
+import { Plus, Pencil, Trash2, Clock, DollarSign, PieChart as PieChartIcon } from "lucide-react";
+import { BIChart } from "@/components/dashboard/BIChart";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { useAllAppointments } from "@/hooks/useClinicData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useServices, useCreateService, useUpdateService, useDeleteService, useProfessionals } from "@/hooks/useClinicData";
 
