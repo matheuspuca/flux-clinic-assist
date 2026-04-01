@@ -88,6 +88,7 @@ const AppRoutes = () => (
       { path: "/professionals", element: <Professionals /> },
       { path: "/services", element: <Services /> },
       { path: "/appointments", element: <Appointments /> },
+      { path: "/patients", element: <Patients /> },
       { path: "/inventory", element: <Inventory /> },
       { path: "/financial", element: <Financial /> },
       { path: "/users", element: <Users /> },

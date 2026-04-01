@@ -13,6 +13,7 @@ export const usePermissions = () => {
     canCompleteAppointments: userRole === "admin" || userRole === "profissional",
     canViewAllAppointments: userRole === "admin" || userRole === "atendente",
     canManageClinicSettings: userRole === "admin",
+    canViewPatients: userRole === "admin" || userRole === "atendente",
     canViewInventory: userRole === "admin",
     isAdmin: userRole === "admin",
     isProfessional: userRole === "profissional",

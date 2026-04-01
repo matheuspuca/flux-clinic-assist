@@ -39,6 +39,7 @@ export function AppSidebar() {
     { title: "Profissionais", url: "/professionals", icon: Users, visible: permissions.canManageProfessionals },
     { title: "Serviços", url: "/services", icon: Briefcase, visible: permissions.canManageServices },
     { title: "Agendamentos", url: "/appointments", icon: Calendar, visible: true },
+    { title: "Pacientes", url: "/patients", icon: UserCheck, visible: permissions.canViewPatients },
     { title: "Estoque", url: "/inventory", icon: Package, visible: permissions.canViewInventory },
     { title: "Financeiro", url: "/financial", icon: DollarSign, visible: permissions.canViewFinancial },
     { title: "Usuários", url: "/users", icon: Users2, visible: permissions.canManageUsers },
