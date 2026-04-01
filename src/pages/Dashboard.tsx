@@ -1,16 +1,13 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, Users, Activity, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, subDays } from "date-fns";
+import { Calendar, Users, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon } from "lucide-react";
+import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SmartKPI } from "@/components/dashboard/SmartKPI";
 import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllAppointments, useProfessionals, useServices } from "@/hooks/useClinicData";
+import ClinicCalendar from "@/components/calendar/ClinicCalendar";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Legend, Line,
@@ -22,9 +19,6 @@ const CHART_COLORS = [
 ];
 
 const Dashboard = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data: appointments = [], isLoading: loadingAppts } = useAllAppointments();
   const { data: professionals = [] } = useProfessionals();
@@ -137,29 +131,7 @@ const Dashboard = () => {
     return Object.entries(hours).map(([h, count]) => ({ hour: `${h}h`, atendimentos: count }));
   }, [appointments]);
 
-  const todayAppointments = useMemo(() =>
-    appointments.filter(a => isSameDay(new Date(a.starts_at), today))
-      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()),
-    [appointments]
-  );
-
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
-  const startDayOfWeek = getDay(monthStart);
-
-  const getAppointmentsForDay = (date: Date) => appointments.filter(a => isSameDay(new Date(a.starts_at), date));
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      pending: { label: "Pendente", variant: "outline" },
-      confirmed: { label: "Confirmado", variant: "default" },
-      completed: { label: "Concluído", variant: "secondary" },
-      cancelled: { label: "Cancelado", variant: "destructive" },
-    };
-    const config = variants[status] || variants.pending;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
+  // todayAppointments and calendar state removed — now handled by ClinicCalendar
 
   if (loadingAppts) {
     return (
@@ -306,121 +278,9 @@ const Dashboard = () => {
           </BIChart>
         </div>
 
-        {/* Calendar */}
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardHeader className="pb-3 md:pb-4 px-3 md:px-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
-                <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
-                <span className="hidden sm:inline">Calendário de Agendamentos</span>
-                <span className="sm:hidden">Calendário</span>
-              </CardTitle>
-              <div className="flex items-center gap-1 md:gap-2">
-                <Button variant="outline" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}><ChevronLeft className="h-3.5 w-3.5" /></Button>
-                <span className="text-xs md:text-sm font-medium min-w-20 md:min-w-28 text-center capitalize">{format(currentMonth, "MMM yyyy", { locale: ptBR })}</span>
-                <Button variant="outline" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}><ChevronRight className="h-3.5 w-3.5" /></Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="px-2 md:px-6 pb-3 md:pb-6">
-            <div className="grid grid-cols-7 gap-0.5 md:gap-1">
-              {["D", "S", "T", "Q", "Q", "S", "S"].map((day, i) => (
-                <div key={`${day}-${i}`} className="h-6 md:h-8 flex items-center justify-center text-[10px] md:text-xs font-medium text-muted-foreground">
-                  <span className="sm:hidden">{day}</span>
-                  <span className="hidden sm:inline">{["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][i]}</span>
-                </div>
-              ))}
-              {Array.from({ length: startDayOfWeek }).map((_, index) => (
-                <div key={`empty-${index}`} className="h-12 md:h-20 bg-muted/30 rounded-md md:rounded-lg" />
-              ))}
-              {daysInMonth.map(date => {
-                const dayAppointments = getAppointmentsForDay(date);
-                const isToday = isSameDay(date, today);
-                return (
-                  <div key={date.toISOString()} className={`h-12 md:h-20 p-0.5 md:p-1 rounded-md md:rounded-lg border transition-all ${isToday ? "border-primary bg-primary/5 shadow-sm" : "border-border hover:border-primary/50 hover:bg-muted/30"}`}>
-                    <div className={`text-[10px] md:text-xs font-medium mb-0.5 md:mb-1 text-center md:text-left ${isToday ? "text-primary" : "text-muted-foreground"}`}>{format(date, "d")}</div>
-                    <div className="hidden md:block space-y-0.5 overflow-y-auto max-h-12">
-                      {dayAppointments.slice(0, 2).map(apt => (
-                        <div key={apt.id} onClick={() => { setSelectedAppointment(apt); setDialogOpen(true); }} className="text-[10px] px-1 py-0.5 rounded truncate cursor-pointer hover:opacity-80 transition-opacity bg-primary text-primary-foreground">
-                          {format(new Date(apt.starts_at), "HH:mm")}
-                        </div>
-                      ))}
-                      {dayAppointments.length > 2 && <div className="text-[10px] text-muted-foreground text-center">+{dayAppointments.length - 2}</div>}
-                    </div>
-                    {dayAppointments.length > 0 && (
-                      <div className="md:hidden flex justify-center gap-0.5">
-                        {dayAppointments.slice(0, 3).map(apt => (
-                          <div key={apt.id} className="w-1 h-1 rounded-full bg-primary" />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Today's Appointments */}
-        <Card className="border-border shadow-sm">
-          <CardHeader className="pb-3 md:pb-4 px-3 md:px-6">
-            <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
-              <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
-              Agenda de Hoje
-              <Badge variant="secondary" className="ml-2 text-xs">{todayAppointments.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 md:px-6 pb-3 md:pb-6">
-            {todayAppointments.length === 0 ? (
-              <p className="text-center text-muted-foreground py-6 md:py-8 text-sm">Nenhum agendamento para hoje</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-                {todayAppointments.map(apt => (
-                  <div key={apt.id} onClick={() => { setSelectedAppointment(apt); setDialogOpen(true); }} className="flex items-center justify-between p-2.5 md:p-3 rounded-lg bg-muted/40 hover:bg-muted/60 cursor-pointer transition-all border border-transparent hover:border-border">
-                    <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                      <div className="w-1 h-8 md:h-10 rounded-full flex-shrink-0 bg-primary" />
-                      <div className="min-w-0">
-                        <p className="font-medium text-xs md:text-sm text-foreground truncate">{apt.patient_name}</p>
-                        <p className="text-[10px] md:text-xs text-muted-foreground truncate">{(apt as any).services?.name || "—"}</p>
-                      </div>
-                    </div>
-                    <div className="text-right flex-shrink-0 ml-2">
-                      <p className="font-semibold text-xs md:text-sm text-primary">{format(new Date(apt.starts_at), "HH:mm")}</p>
-                      {getStatusBadge(apt.status)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Professional Calendar */}
+        <ClinicCalendar />
       </div>
-
-      {/* Appointment Detail Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="w-[95vw] max-w-md">
-          <DialogHeader><DialogTitle>Detalhes do Agendamento</DialogTitle></DialogHeader>
-          {selectedAppointment && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-12 rounded-full bg-primary" />
-                <div>
-                  <p className="font-semibold text-lg">{selectedAppointment.patient_name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedAppointment.patient_phone}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><p className="text-xs text-muted-foreground">Serviço</p><p className="font-medium text-sm">{(selectedAppointment as any).services?.name || "—"}</p></div>
-                <div><p className="text-xs text-muted-foreground">Profissional</p><p className="font-medium text-sm">{(selectedAppointment as any).professionals?.full_name || "—"}</p></div>
-                <div><p className="text-xs text-muted-foreground">Data</p><p className="font-medium text-sm">{format(new Date(selectedAppointment.starts_at), "d 'de' MMMM", { locale: ptBR })}</p></div>
-                <div><p className="text-xs text-muted-foreground">Horário</p><p className="font-medium text-sm">{format(new Date(selectedAppointment.starts_at), "HH:mm")} - {format(new Date(selectedAppointment.ends_at), "HH:mm")}</p></div>
-                <div><p className="text-xs text-muted-foreground">Valor</p><p className="font-medium text-sm text-accent">R$ {Number((selectedAppointment as any).services?.price || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p></div>
-                <div><p className="text-xs text-muted-foreground">Status</p>{getStatusBadge(selectedAppointment.status)}</div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
