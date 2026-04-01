@@ -147,7 +147,16 @@ const Professionals = () => {
 
         {filtered.length === 0 && (
           <Card className="p-12 text-center border-border">
-            <p className="text-muted-foreground">Nenhum profissional encontrado</p>
+            <Users className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
+            <h3 className="text-lg font-semibold text-foreground mb-1">Nenhum profissional encontrado</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {searchTerm ? "Tente ajustar os filtros de busca." : "Adicione o primeiro profissional para começar."}
+            </p>
+            {!searchTerm && (
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 h-4 w-4" /> Criar primeiro profissional
+              </Button>
+            )}
           </Card>
         )}
 

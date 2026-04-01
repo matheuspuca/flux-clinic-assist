@@ -202,7 +202,12 @@ const Appointments = () => {
 
       {!loadingAppts && appointments.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Nenhum agendamento para esta data</p>
+          <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
+          <h3 className="text-lg font-semibold text-foreground mb-1">Nenhum agendamento para esta data</h3>
+          <p className="text-sm text-muted-foreground mb-4">Selecione outra data ou crie um novo agendamento.</p>
+          <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
+            <Plus className="mr-2 h-4 w-4" /> Novo Agendamento
+          </Button>
         </div>
       )}
     </div>

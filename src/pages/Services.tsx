@@ -193,7 +193,16 @@ const Services = () => {
 
       {filteredServices.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Nenhum serviço encontrado</p>
+          <Briefcase className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
+          <h3 className="text-lg font-semibold text-foreground mb-1">Nenhum serviço encontrado</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            {searchTerm ? "Tente ajustar os filtros." : "Crie o primeiro serviço para começar a agendar."}
+          </p>
+          {!searchTerm && (
+            <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
+              <Plus className="mr-2 h-4 w-4" /> Criar primeiro serviço
+            </Button>
+          )}
         </div>
       )}
 
