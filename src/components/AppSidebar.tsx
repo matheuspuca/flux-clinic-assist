@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Users2, Briefcase, Calendar, DollarSign, Package, MessageSquare, Settings } from "lucide-react";
+import { LayoutDashboard, Users, Users2, UserCheck, Briefcase, Calendar, DollarSign, Package, MessageSquare, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { usePermissions } from "@/hooks/usePermissions";
