@@ -54,6 +54,7 @@ export function AppSidebar() {
 
   const userItems: MenuItem[] = [
     { title: "Meu Perfil", url: "/profile", icon: User, visible: true },
+    { title: "Super Admin", url: "/superadmin", icon: ShieldCheck, visible: isSuperAdmin },
   ];
 
   const renderItems = (items: MenuItem[]) =>
