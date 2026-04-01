@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon } from "lucide-react";
 import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SmartKPI } from "@/components/dashboard/SmartKPI";
 import { BIChart } from "@/components/dashboard/BIChart";
 import { Skeleton } from "@/components/ui/skeleton";
