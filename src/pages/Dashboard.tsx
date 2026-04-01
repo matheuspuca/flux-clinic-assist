@@ -65,62 +65,6 @@ const Dashboard = () => {
     };
   }, [appointments]);
 
-  const appointmentsByDay = useMemo(() => {
-    const days = [];
-    for (let i = 13; i >= 0; i--) {
-      const date = subDays(today, i);
-      const dayAppts = appointments.filter(a => isSameDay(new Date(a.starts_at), date));
-      days.push({
-        day: format(date, "dd/MM"),
-        agendados: dayAppts.length,
-        concluidos: dayAppts.filter(a => a.status === "completed").length,
-        cancelados: dayAppts.filter(a => a.status === "cancelled").length,
-      });
-    }
-    return days;
-  }, [appointments]);
-
-  const revenueByDay = useMemo(() => {
-    const days = [];
-    for (let i = 13; i >= 0; i--) {
-      const date = subDays(today, i);
-      const dayRevenue = appointments
-        .filter(a => isSameDay(new Date(a.starts_at), date) && a.status === "completed")
-        .reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0);
-      days.push({ day: format(date, "dd/MM"), receita: dayRevenue });
-    }
-    return days;
-  }, [appointments]);
-
-  const serviceDistribution = useMemo(() => {
-    return services.map(s => ({
-      name: s.name,
-      value: appointments.filter(a => a.service_id === s.id && a.status === "completed").length,
-      revenue: appointments.filter(a => a.service_id === s.id && a.status === "completed").reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0),
-    })).filter(s => s.value > 0);
-  }, [appointments, services]);
-
-  const professionalPerformance = useMemo(() => {
-    return professionals.map((p, i) => {
-      const profAppts = appointments.filter(a => a.professional_id === p.id && a.status === "completed");
-      return {
-        name: p.full_name.split(" ").slice(0, 2).join(" "),
-        atendimentos: profAppts.length,
-        receita: profAppts.reduce((acc, a) => acc + Number((a as any).services?.price || 0), 0),
-        fill: CHART_COLORS[i % CHART_COLORS.length],
-      };
-    });
-  }, [appointments, professionals]);
-
-  const hourlyDistribution = useMemo(() => {
-    const hours: Record<number, number> = {};
-    for (let h = 8; h <= 18; h++) hours[h] = 0;
-    appointments.filter(a => a.status === "completed").forEach(a => {
-      const h = new Date(a.starts_at).getHours();
-      if (hours[h] !== undefined) hours[h]++;
-    });
-    return Object.entries(hours).map(([h, count]) => ({ hour: `${h}h`, atendimentos: count }));
-  }, [appointments]);
 
   // todayAppointments and calendar state removed — now handled by ClinicCalendar
 
