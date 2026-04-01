@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, TrendingUp, DollarSign, XCircle, Clock, Target, Zap, BarChart3, PieChartIcon } from "lucide-react";
+import { Calendar, Users, DollarSign, XCircle, Target, Zap } from "lucide-react";
 import { format, isSameDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { SmartKPI } from "@/components/dashboard/SmartKPI";
