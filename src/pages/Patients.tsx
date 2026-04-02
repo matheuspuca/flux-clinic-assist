@@ -35,40 +35,60 @@ export default function Patients() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   const patients = useMemo(() => {
-    if (!appointments?.length) return [];
     const map = new Map<string, Patient>();
 
-    for (const apt of appointments) {
-      const key = `${apt.patient_name}||${apt.patient_phone || ""}||${apt.patient_email || ""}`;
-      const existing = map.get(key);
-      const serviceName = (apt.services as any)?.name || "";
-      const servicePrice = (apt.services as any)?.price || 0;
-      const isCompleted = apt.status === "completed";
+    // Add from appointments
+    if (appointments?.length) {
+      for (const apt of appointments) {
+        const key = `${apt.patient_name}||${apt.patient_phone || ""}||${apt.patient_email || ""}`;
+        const existing = map.get(key);
+        const serviceName = (apt.services as any)?.name || "";
+        const servicePrice = (apt.services as any)?.price || 0;
+        const isCompleted = apt.status === "completed";
 
-      if (existing) {
-        existing.totalAppointments++;
-        if (apt.starts_at > existing.lastAppointment) existing.lastAppointment = apt.starts_at;
-        if (isCompleted) existing.totalSpent += Number(servicePrice);
-        if (serviceName && !existing.servicesUsed.includes(serviceName)) {
-          existing.servicesUsed.push(serviceName);
+        if (existing) {
+          existing.totalAppointments++;
+          if (apt.starts_at > existing.lastAppointment) existing.lastAppointment = apt.starts_at;
+          if (isCompleted) existing.totalSpent += Number(servicePrice);
+          if (serviceName && !existing.servicesUsed.includes(serviceName)) {
+            existing.servicesUsed.push(serviceName);
+          }
+        } else {
+          map.set(key, {
+            name: apt.patient_name,
+            phone: apt.patient_phone,
+            email: apt.patient_email,
+            totalAppointments: 1,
+            lastAppointment: apt.starts_at,
+            totalSpent: isCompleted ? Number(servicePrice) : 0,
+            servicesUsed: serviceName ? [serviceName] : [],
+          });
         }
-      } else {
-        map.set(key, {
-          name: apt.patient_name,
-          phone: apt.patient_phone,
-          email: apt.patient_email,
-          totalAppointments: 1,
-          lastAppointment: apt.starts_at,
-          totalSpent: isCompleted ? Number(servicePrice) : 0,
-          servicesUsed: serviceName ? [serviceName] : [],
-        });
+      }
+    }
+
+    // Merge registered patients (add if not already present from appointments)
+    if (registeredPatients?.length) {
+      for (const rp of registeredPatients) {
+        const key = `${rp.name}||${rp.phone || ""}||${rp.email || ""}`;
+        if (!map.has(key)) {
+          map.set(key, {
+            name: rp.name,
+            phone: rp.phone,
+            email: rp.email,
+            totalAppointments: 0,
+            lastAppointment: rp.created_at,
+            totalSpent: 0,
+            servicesUsed: [],
+          });
+        }
       }
     }
 
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.lastAppointment).getTime() - new Date(a.lastAppointment).getTime()
     );
-  }, [appointments]);
+  }, [appointments, registeredPatients]);
 
   const filtered = useMemo(() => {
     if (!search) return patients;
