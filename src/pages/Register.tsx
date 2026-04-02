@@ -64,33 +64,19 @@ const Register = () => {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            full_name: fullName,
+            phone: phone || null,
+            clinic_name: clinicName,
+            clinic_area: area,
+            clinic_cnpj: cnpj || null,
+          },
+        },
       });
       if (authError) throw authError;
       if (!authData.user) throw new Error("Erro ao criar usuário");
-
-      const userId = authData.user.id;
-
-      const { data: clinicData, error: clinicError } = await supabase
-        .from("clinics")
-        .insert({ name: clinicName, area, cnpj: cnpj || null })
-        .select("id")
-        .single();
-      if (clinicError) throw clinicError;
-
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        full_name: fullName,
-        clinic_id: clinicData.id,
-        phone: phone || null,
-      });
-      if (profileError) throw profileError;
-
-      const { error: roleError } = await supabase.from("user_roles").insert({
-        user_id: userId,
-        role: "admin",
-      });
-      if (roleError) throw roleError;
 
       toast.success("Conta criada com sucesso!", {
         description: "Verifique seu email para confirmar o cadastro.",

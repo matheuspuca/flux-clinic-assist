@@ -69,13 +69,69 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const userRole = isImpersonating ? impersonationTarget?.role ?? null : realRole;
   const clinic = isImpersonating ? impersonatedClinic : realClinic;
 
+  const provisionNewUser = async (userId: string, metadata: Record<string, any>) => {
+    try {
+      const clinicName = metadata.clinic_name;
+      const clinicArea = metadata.clinic_area;
+      const fullName = metadata.full_name || "Usuário";
+
+      if (!clinicName || !clinicArea) return false;
+
+      // Create clinic
+      const { data: clinicData, error: clinicError } = await supabase
+        .from("clinics")
+        .insert({ name: clinicName, area: clinicArea, cnpj: metadata.clinic_cnpj || null })
+        .select("id")
+        .single();
+      if (clinicError) throw clinicError;
+
+      // Create profile
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: userId,
+        full_name: fullName,
+        clinic_id: clinicData.id,
+        phone: metadata.phone || null,
+      });
+      if (profileError) throw profileError;
+
+      // Assign admin role
+      const { error: roleError } = await supabase.from("user_roles").insert({
+        user_id: userId,
+        role: "admin",
+      });
+      if (roleError) throw roleError;
+
+      return true;
+    } catch (error) {
+      console.error("Error provisioning new user:", error);
+      return false;
+    }
+  };
+
   const fetchUserData = async (userId: string) => {
     try {
-      const { data: profileData } = await supabase
+      let { data: profileData } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
         .maybeSingle();
+
+      // If no profile exists, try to auto-provision from user metadata
+      if (!profileData) {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const metadata = currentUser?.user_metadata;
+        if (metadata?.clinic_name) {
+          const provisioned = await provisionNewUser(userId, metadata);
+          if (provisioned) {
+            const { data: newProfile } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", userId)
+              .maybeSingle();
+            profileData = newProfile;
+          }
+        }
+      }
 
       setRealProfile(profileData);
 
