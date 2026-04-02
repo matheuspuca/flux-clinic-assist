@@ -40,11 +40,21 @@ const Onboarding = () => {
         .single();
       if (clinicError) throw clinicError;
 
+      // Create profile for the user
+      const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuário";
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ clinic_id: clinicData.id, phone: phone || null })
-        .eq("id", user.id);
+        .insert({ id: user.id, clinic_id: clinicData.id, full_name: fullName, phone: phone || null });
       if (profileError) throw profileError;
+
+      // Assign admin role
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: user.id, role: "admin" });
+      if (roleError) throw roleError;
+
+      // Create default clinic settings
+      await supabase.from("clinic_settings").insert({ clinic_id: clinicData.id });
 
       toast.success("Clínica configurada com sucesso!");
       navigate("/dashboard");
