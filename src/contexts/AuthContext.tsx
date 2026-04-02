@@ -163,6 +163,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsSuperAdmin(!!saData);
     } catch (error) {
       console.error("Error fetching user data:", error);
+    } finally {
+      setProfileLoaded(true);
     }
   };
 
