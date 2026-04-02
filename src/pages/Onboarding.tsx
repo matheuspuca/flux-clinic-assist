@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { Building2, Phone } from "lucide-react";
 
 const AREAS = [
-  "Odontologia", "Fisioterapia", "Psicologia", "Cardiologia",
-  "Clínica Geral", "Dermatologia", "Nutrição", "Outra",
+  "Cardiologia", "Clínica Geral", "Dermatologia", "Fisioterapia",
+  "Nutrição", "Odontologia", "Psicologia", "Psiquiatria", "Outra",
 ];
 
 const Onboarding = () => {
