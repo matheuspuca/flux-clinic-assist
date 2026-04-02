@@ -30,6 +30,7 @@ const statusConfig: Record<string, { label: string; variant: "outline" | "defaul
 
 export default function Patients() {
   const { data: appointments, isLoading } = useAllAppointments();
+  const { data: registeredPatients, isLoading: isLoadingPatients } = usePatients();
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
