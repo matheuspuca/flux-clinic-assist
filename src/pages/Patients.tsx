@@ -121,6 +121,7 @@ export default function Patients() {
           <h1 className="text-2xl font-bold text-foreground">Pacientes</h1>
           <p className="text-sm text-muted-foreground">{patients.length} paciente(s) encontrado(s)</p>
         </div>
+        <CreatePatientDialog />
       </div>
 
       <div className="relative max-w-sm">
