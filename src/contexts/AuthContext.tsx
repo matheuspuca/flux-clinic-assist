@@ -32,6 +32,7 @@ interface AuthContextType {
   userRole: AppRole | null;
   clinic: Clinic | null;
   loading: boolean;
+  profileLoaded: boolean;
   isSuperAdmin: boolean;
   // Impersonation
   isImpersonating: boolean;
