@@ -19,12 +19,17 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast.error("Erro ao fazer login", { description: error.message });
     } else {
-      navigate("/dashboard");
+      const mustChange = data.user?.user_metadata?.must_change_password;
+      if (mustChange) {
+        navigate("/change-password");
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 
