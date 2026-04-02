@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,17 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast.error("Erro ao fazer login", { description: error.message });
     } else {
-      navigate("/dashboard");
+      const mustChange = data.user?.user_metadata?.must_change_password;
+      if (mustChange) {
+        navigate("/change-password");
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 
@@ -188,14 +193,6 @@ const Login = () => {
               >
                 ← Voltar ao login
               </button>
-            )}
-            {!resetMode && (
-              <p className="text-sm text-muted-foreground">
-                Não tem conta?{" "}
-                <Link to="/register" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                  Criar conta
-                </Link>
-              </p>
             )}
           </div>
         </div>

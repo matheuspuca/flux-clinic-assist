@@ -15,7 +15,7 @@ import Appointments from "./pages/Appointments";
 import Inventory from "./pages/Inventory";
 import Financial from "./pages/Financial";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import ChangePassword from "./pages/ChangePassword";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
@@ -83,8 +83,8 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Navigate to="/dashboard" replace />} />
     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-    <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
     <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/change-password" element={<ChangePassword />} />
     <Route path="/onboarding" element={
       <ProtectedRoute><Onboarding /></ProtectedRoute>
     } />
