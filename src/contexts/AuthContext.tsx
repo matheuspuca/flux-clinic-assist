@@ -110,6 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUserData = async (userId: string) => {
+    setProfileLoaded(false);
     try {
       let { data: profileData } = await supabase
         .from("profiles")
