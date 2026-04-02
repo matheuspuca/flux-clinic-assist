@@ -262,3 +262,44 @@ export function useDeleteAppointment() {
     onError: (e: Error) => toast.error("Erro ao remover", { description: e.message }),
   });
 }
+
+// ─── Patients ───
+export function usePatients() {
+  const { clinic } = useAuth();
+  return useQuery({
+    queryKey: ["patients", clinic?.id],
+    queryFn: async () => {
+      if (!clinic?.id) return [];
+      const { data, error } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("clinic_id", clinic.id)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!clinic?.id,
+  });
+}
+
+export function useCreatePatient() {
+  const qc = useQueryClient();
+  const { clinic } = useAuth();
+  return useMutation({
+    mutationFn: async (values: { name: string; phone?: string; email?: string; notes?: string }) => {
+      if (!clinic?.id) throw new Error("Sem clínica");
+      const { data, error } = await supabase
+        .from("patients")
+        .insert({ ...values, clinic_id: clinic.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["patients"] });
+      toast.success("Paciente cadastrado");
+    },
+    onError: (e: Error) => toast.error("Erro ao cadastrar paciente", { description: e.message }),
+  });
+}
