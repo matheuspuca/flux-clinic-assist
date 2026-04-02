@@ -105,7 +105,7 @@ export default function Patients() {
       .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
   }, [selectedPatient, appointments]);
 
-  if (isLoading) {
+  if (isLoading || isLoadingPatients) {
     return (
       <div className="p-6 space-y-4">
         <Skeleton className="h-10 w-full max-w-sm" />
