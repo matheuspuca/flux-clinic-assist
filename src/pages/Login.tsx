@@ -189,14 +189,6 @@ const Login = () => {
                 ← Voltar ao login
               </button>
             )}
-            {!resetMode && (
-              <p className="text-sm text-muted-foreground">
-                Não tem conta?{" "}
-                <Link to="/register" className="text-primary hover:text-primary/80 font-medium transition-colors">
-                  Criar conta
-                </Link>
-              </p>
-            )}
           </div>
         </div>
       </div>
