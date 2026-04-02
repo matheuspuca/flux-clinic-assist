@@ -32,6 +32,7 @@ interface AuthContextType {
   userRole: AppRole | null;
   clinic: Clinic | null;
   loading: boolean;
+  profileLoaded: boolean;
   isSuperAdmin: boolean;
   // Impersonation
   isImpersonating: boolean;
@@ -55,6 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [realRole, setRealRole] = useState<AppRole | null>(null);
   const [realClinic, setRealClinic] = useState<Clinic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   // Impersonation state
@@ -109,6 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUserData = async (userId: string) => {
+    setProfileLoaded(false);
     try {
       let { data: profileData } = await supabase
         .from("profiles")
@@ -160,6 +163,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsSuperAdmin(!!saData);
     } catch (error) {
       console.error("Error fetching user data:", error);
+    } finally {
+      setProfileLoaded(true);
     }
   };
 
@@ -232,7 +237,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{
-      user, profile, userRole, clinic, loading, isSuperAdmin,
+      user, profile, userRole, clinic, loading, profileLoaded, isSuperAdmin,
       isImpersonating, impersonationTarget,
       startImpersonation, stopImpersonation, signOut,
     }}>
