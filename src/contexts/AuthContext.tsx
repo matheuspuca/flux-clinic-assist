@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [realRole, setRealRole] = useState<AppRole | null>(null);
   const [realClinic, setRealClinic] = useState<Clinic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   // Impersonation state
