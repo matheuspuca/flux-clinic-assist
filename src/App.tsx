@@ -15,7 +15,7 @@ import Appointments from "./pages/Appointments";
 import Inventory from "./pages/Inventory";
 import Financial from "./pages/Financial";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import ChangePassword from "./pages/ChangePassword";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
