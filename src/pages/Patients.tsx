@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useAllAppointments } from "@/hooks/useClinicData";
+import { useAllAppointments, usePatients } from "@/hooks/useClinicData";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { ptBR } from "date-fns/locale";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CreatePatientDialog } from "@/components/patients/CreatePatientDialog";
 
 interface Patient {
   name: string;
